@@ -11,40 +11,35 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     private View loadingView, authView, dashboardView;
-    private EditText regName, regUser, regPhone, searchUser;
-    private TextView resultTxt;
-    private DatabaseReference mDatabase;
+    private EditText regName, regUser, regPhone, msgInput;
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // الربط البرمي
+        // ربط العناصر
         loadingView = findViewById(R.id.loadingView);
         authView = findViewById(R.id.authView);
         dashboardView = findViewById(R.id.dashboardView);
         regName = findViewById(R.id.regName);
         regUser = findViewById(R.id.regUsername);
         regPhone = findViewById(R.id.regPhone);
-        searchUser = findViewById(R.id.searchUsername);
-        resultTxt = findViewById(R.id.searchResult);
+        msgInput = findViewById(R.id.messageInput);
 
-        // تنبيه: إذا تطبيقك كراش هنا، معناها ملف google-services.json ناقص أو غلط
-        try {
-            mAuth = FirebaseAuth.getInstance();
-            mDatabase = FirebaseDatabase.getInstance().getReference();
-        } catch (Exception e) {
-            Toast.makeText(this, "فشل في تشغيل خدمات جوجل!", Toast.LENGTH_LONG).show();
-        }
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // شاشة التحميل
+        // 1. شاشة تحميل
         new Handler().postDelayed(() -> {
             loadingView.setVisibility(View.GONE);
             if (mAuth.getCurrentUser() == null) {
@@ -54,52 +49,71 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 3000);
 
-        // الزر اللي جان مديتفاعل - هسه ضفتله رسائل كشف
-        findViewById(R.id.registerBtn).setOnClickListener(v -> {
-            Toast.makeText(this, "تم الضغط على الزر، جاري الفحص...", Toast.LENGTH_SHORT).show();
-            registerOnPlatform();
-        });
+        // 2. زر الدخول للمنصة (التسجيل)
+        findViewById(R.id.registerBtn).setOnClickListener(v -> registerUser());
 
-        findViewById(R.id.searchBtn).setOnClickListener(v -> searchFriend());
+        // 3. زر إرسال الرسالة (داخل المنصة)
+        findViewById(R.id.sendBtn).setOnClickListener(v -> sendMessageToTelegram());
     }
 
-    private void registerOnPlatform() {
+    private void registerUser() {
         String name = regName.getText().toString().trim();
         String user = regUser.getText().toString().trim();
         String phone = regPhone.getText().toString().trim();
 
         if (name.isEmpty() || user.isEmpty() || phone.isEmpty()) {
-            Toast.makeText(this, "أكو حقول فارغة يا حسين!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "عيني حسين، املأ كل الحقول!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // محاولة الدخول للسيرفر
-        Toast.makeText(this, "جاري الاتصال بسيرفر Hussain Ultra...", Toast.LENGTH_SHORT).show();
-        
+        Toast.makeText(this, "جاري الاتصال بالسيرفر...", Toast.LENGTH_SHORT).show();
+
+        // محاولة تسجيل الدخول
         mAuth.signInAnonymously()
             .addOnSuccessListener(authResult -> {
                 String uid = mAuth.getUid();
-                HashMap<String, Object> userMap = new HashMap<>();
-                userMap.put("name", name);
-                userMap.put("username", user.toLowerCase());
-                userMap.put("phone", phone);
+                HashMap<String, Object> userData = new HashMap<>();
+                userData.put("name", name);
+                userData.put("username", user.toLowerCase());
+                userData.put("phone", phone);
 
-                mDatabase.child("HussainUsers").child(uid).setValue(userMap)
+                // حفظ البيانات في السحاب
+                mDatabase.child("HussainUsers").child(uid).setValue(userData)
                     .addOnSuccessListener(aVoid -> {
-                        mDatabase.child("Usernames").child(user.toLowerCase()).setValue(uid);
                         authView.setVisibility(View.GONE);
                         dashboardView.setVisibility(View.VISIBLE);
-                        Toast.makeText(this, "تم الدخول بنجاح! ✅", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(this, "فشل حفظ البيانات: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                        Toast.makeText(this, "تم التسجيل بنجاح! ✅", Toast.LENGTH_SHORT).show();
+                    });
             })
             .addOnFailureListener(e -> {
-                // هذي الرسالة راح تگلك ليش الفايربيس مديقبل يدخلك
-                Toast.makeText(this, "خطأ في السيرفر: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                // إذا طلع هذا الخطأ، فالمشكلة بإعدادات موقع Firebase
+                Toast.makeText(this, "خطأ بالسيرفر: " + e.getMessage(), Toast.LENGTH_LONG).show();
             });
     }
 
-    private void searchFriend() {
-        // كود البحث يبقى نفسه
+    private void sendMessageToTelegram() {
+        String message = msgInput.getText().toString().trim();
+        // حط التوكن والآيدي مالتك هنا ثابتين حتى يرسل فوراً
+        String token = "8307560710:AAFNRpzh141cq7rKt_OmPR0A823dxEaOZVU"; 
+        String chatId = "7259620384";
+
+        if (message.isEmpty()) {
+            Toast.makeText(this, "اكتب شي حتى نرسله!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                URL url = new URL("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chatId + "&text=" + message);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                if (conn.getResponseCode() == 200) {
+                    runOnUiThread(() -> Toast.makeText(this, "✅ وصلت الرسالة لتيليجرام!", Toast.LENGTH_SHORT).show());
+                } else {
+                    runOnUiThread(() -> Toast.makeText(this, "❌ خطأ برابط البوت", Toast.LENGTH_SHORT).show());
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, "❌ فشل الاتصال بالإنترنت", Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 }
