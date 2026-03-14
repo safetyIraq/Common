@@ -6,171 +6,318 @@
     android:background="@color/black"
     android:layoutDirection="rtl">
 
-    <ImageView
+    <!-- ========== شاشة المصادقة (تسجيل الدخول/إنشاء حساب) ========== -->
+    <RelativeLayout
+        android:id="@+id/authView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- صورة الخلفية -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_login"
+            app:tint="#4D000000"
+            app:tintMode="src_over" />
+
+        <!-- مؤشر التحميل -->
+        <ProgressBar
+            android:id="@+id/loadingView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:elevation="10dp"
+            android:indeterminateTint="@color/white"
+            android:visibility="gone" />
+
+        <!-- منطقة المحتوى القابلة للتمرير -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="30dp"
+                android:gravity="center">
+
+                <!-- العنوان -->
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تسجيل الدخول"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="40dp"
+                    android:shadowColor="#000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="5" />
+
+                <!-- حقل اسم المستخدم (يظهر فقط في وضع إنشاء الحساب) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutUser"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:visibility="gone"
+                    app:boxBackgroundColor="@color/glass_dark_box"
+                    app:boxStrokeColor="@color/glass_stroke"
+                    app:boxCornerRadiusTopStart="20dp"
+                    app:boxCornerRadiusTopEnd="20dp"
+                    app:boxCornerRadiusBottomStart="20dp"
+                    app:boxCornerRadiusBottomEnd="20dp"
+                    app:startIconDrawable="@android:drawable/ic_menu_edit"
+                    app:startIconTint="@color/white"
+                    app:hintTextColor="@color/white">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/regUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:hint="اختر يوزر نيم فريد"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="16sp"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- حقل البريد الإلكتروني -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    app:boxBackgroundColor="@color/glass_dark_box"
+                    app:boxStrokeColor="@color/glass_stroke"
+                    app:boxCornerRadiusTopStart="20dp"
+                    app:boxCornerRadiusTopEnd="20dp"
+                    app:boxCornerRadiusBottomStart="20dp"
+                    app:boxCornerRadiusBottomEnd="20dp"
+                    app:startIconDrawable="@android:drawable/ic_dialog_email"
+                    app:startIconTint="@color/white"
+                    app:hintTextColor="@color/white">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/regEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:hint="البريد الإلكتروني"
+                        android:inputType="textEmailAddress"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="16sp"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- حقل كلمة المرور -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:boxBackgroundColor="@color/glass_dark_box"
+                    app:boxStrokeColor="@color/glass_stroke"
+                    app:boxCornerRadiusTopStart="20dp"
+                    app:boxCornerRadiusTopEnd="20dp"
+                    app:boxCornerRadiusBottomStart="20dp"
+                    app:boxCornerRadiusBottomEnd="20dp"
+                    app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                    app:startIconTint="@color/white"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="@color/white"
+                    app:hintTextColor="@color/white">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/regPass"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:hint="كلمة المرور"
+                        android:inputType="textPassword"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="16sp"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- رابط نسيت كلمة المرور -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="نسيت كلمة المرور؟"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="start"
+                    android:layout_marginBottom="30dp" />
+
+                <!-- زر الإجراء الرئيسي (تسجيل الدخول/إنشاء حساب) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mainActionBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:text="تسجيل الدخول"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/blue_primary"
+                    app:cornerRadius="20dp"
+                    android:layout_marginBottom="35dp" />
+
+                <!-- نص الفاصل -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="أو المتابعة باستخدام"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- أزرار التواصل الاجتماعي -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="40dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGoogle"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="Google"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/colorGoogle"
+                        app:cornerRadius="15dp"
+                        android:layout_marginEnd="10dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFacebook"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="Facebook"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/colorFacebook"
+                        app:cornerRadius="15dp"
+                        android:layout_marginStart="10dp" />
+                </LinearLayout>
+
+                <!-- منطقة التبديل بين تسجيل الدخول وإنشاء حساب -->
+                <LinearLayout
+                    android:id="@+id/switchModeLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layoutDirection="rtl">
+
+                    <TextView
+                        android:id="@+id/tvSwitchPrefix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ليس لديك حساب؟ "
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvSwitchAction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="إنشاء حساب جديد"
+                        android:textColor="@color/blue_primary"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+    <!-- ========== شاشة لوحة التحكم (بعد تسجيل الدخول) ========== -->
+    <LinearLayout
+        android:id="@+id/dashboardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bg_login" 
-        app:tint="#4D000000"
-        app:tintMode="src_over"/> 
-
-    <ProgressBar android:id="@+id/loadingView"
-        android:layout_width="60dp" android:layout_height="60dp"
-        android:layout_centerInParent="true" android:elevation="10dp"
-        android:indeterminateTint="@color/white" android:visibility="gone" />
-
-    <ScrollView android:id="@+id/authView"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:fillViewport="true">
-        
-        <LinearLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:padding="30dp" android:gravity="center">
-
-            <TextView android:id="@+id/tvTitle"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="تسجيل الدخول" android:textSize="36sp" android:textStyle="bold"
-                android:textColor="@color/white" android:layout_marginTop="50dp" android:layout_marginBottom="40dp"
-                android:shadowColor="#000000" android:shadowDx="3" android:shadowDy="3" android:shadowRadius="5"/>
-
-            <com.google.android.material.textfield.TextInputLayout android:id="@+id/layoutUser"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="15dp"
-                app:boxBackgroundColor="@color/glass_dark_box" app:boxStrokeColor="@color/glass_stroke"
-                app:boxCornerRadiusTopStart="20dp" app:boxCornerRadiusTopEnd="20dp" app:boxCornerRadiusBottomStart="20dp" app:boxCornerRadiusBottomEnd="20dp"
-                app:startIconDrawable="@android:drawable/ic_menu_edit" app:startIconTint="@color/white" app:hintTextColor="@color/white" android:visibility="gone">
-                <com.google.android.material.textfield.TextInputEditText android:id="@+id/regUser"
-                    android:layout_width="match_parent" android:layout_height="60dp"
-                    android:hint="اختر يوزر نيم فريد" android:textColorHint="@color/text_hint" android:textSize="16sp" android:textColor="@color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="15dp"
-                app:boxBackgroundColor="@color/glass_dark_box" app:boxStrokeColor="@color/glass_stroke"
-                app:boxCornerRadiusTopStart="20dp" app:boxCornerRadiusTopEnd="20dp" app:boxCornerRadiusBottomStart="20dp" app:boxCornerRadiusBottomEnd="20dp"
-                app:startIconDrawable="@android:drawable/ic_dialog_email" app:startIconTint="@color/white" app:hintTextColor="@color/white">
-                <com.google.android.material.textfield.TextInputEditText android:id="@+id/regEmail"
-                    android:layout_width="match_parent" android:layout_height="60dp"
-                    android:hint="البريد الإلكتروني" android:inputType="textEmailAddress" android:textColorHint="@color/text_hint" android:textSize="16sp" android:textColor="@color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp"
-                app:boxBackgroundColor="@color/glass_dark_box" app:boxStrokeColor="@color/glass_stroke"
-                app:boxCornerRadiusTopStart="20dp" app:boxCornerRadiusTopEnd="20dp" app:boxCornerRadiusBottomStart="20dp" app:boxCornerRadiusBottomEnd="20dp"
-                app:startIconDrawable="@android:drawable/ic_lock_idle_lock" app:startIconTint="@color/white" app:passwordToggleEnabled="true" app:passwordToggleTint="@color/white" app:hintTextColor="@color/white">
-                <com.google.android.material.textfield.TextInputEditText android:id="@+id/regPass"
-                    android:layout_width="match_parent" android:layout_height="60dp"
-                    android:hint="كلمة المرور" android:inputType="textPassword" android:textColorHint="@color/text_hint" android:textSize="16sp" android:textColor="@color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="نسيت كلمة المرور؟" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold"
-                android:layout_gravity="start" android:layout_marginBottom="30dp"/>
-
-            <com.google.android.material.button.MaterialButton android:id="@+id/mainActionBtn"
-                android:layout_width="match_parent" android:layout_height="65dp"
-                android:text="تسجيل الدخول" android:textSize="20sp" android:textStyle="bold" android:textColor="@color/white"
-                android:backgroundTint="@color/blue_primary" app:cornerRadius="20dp" android:layout_marginBottom="35dp"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="أو المتابعة باستخدام" android:textColor="@color/white" android:textStyle="bold" android:layout_marginBottom="20dp"/>
-
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="40dp">
-                
-                <com.google.android.material.button.MaterialButton android:id="@+id/btnGoogle"
-                    android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1"
-                    android:text="Google" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/white"
-                    android:backgroundTint="@color/colorGoogle" app:cornerRadius="15dp" android:layout_marginEnd="10dp"/>
-
-                <com.google.android.material.button.MaterialButton android:id="@+id/btnFacebook"
-                    android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1"
-                    android:text="Facebook" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/white"
-                    android:backgroundTint="@color/colorFacebook" app:cornerRadius="15dp" android:layout_marginStart="10dp"/>
-
-            </LinearLayout>
-
-            <LinearLayout android:id="@+id/switchModeLayout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layoutDirection="rtl">
-                <TextView android:id="@+id/tvSwitchPrefix" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="ليس لديك حساب؟ " android:textColor="@color/white" android:textSize="16sp"/>
-                <TextView android:id="@+id/tvSwitchAction" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="إنشاء حساب جديد" android:textColor="@color/blue_primary" android:textStyle="bold" android:textSize="16sp"/>
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- تم دمج الـ RelativeLayout الأول هنا داخل LinearLayout مع الحفاظ على المحتوى -->
-    <LinearLayout android:id="@+id/dashboardView" 
-        android:layout_width="match_parent" 
-        android:layout_height="match_parent" 
         android:visibility="gone"
         android:orientation="vertical">
 
-        <!-- محتوى الـ RelativeLayout الأول -->
-        <com.google.android.material.appbar.AppBarLayout 
-            android:id="@+id/topBar" 
-            android:layout_width="match_parent" 
+        <!-- شريط التطبيق العلوي -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF">
-            <androidx.appcompat.widget.Toolbar 
+
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/mainToolbar"
-                android:layout_width="match_parent" 
-                android:layout_height="?attr/actionBarSize" 
-                app:title="Connectify" 
-                app:titleTextColor="#000000" 
-                android:elevation="4dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Connectify"
+                app:titleTextColor="#000000"
+                android:elevation="4dp" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <FrameLayout 
-            android:id="@+id/fragmentContainer" 
-            android:layout_width="match_parent" 
+        <!-- حاوية الشظايا (Fragments) -->
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-            
-            <TextView 
-                android:id="@+id/tabContentText" 
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:text="قائمة المحادثات" 
-                android:layout_gravity="center" 
-                android:textSize="24sp" 
-                android:textColor="#000000" 
-                android:textStyle="bold"/>
+
+            <!-- نص مؤقت للمحتوى -->
+            <TextView
+                android:id="@+id/tabContentText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="قائمة المحادثات"
+                android:layout_gravity="center"
+                android:textSize="24sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
         </FrameLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView 
-            android:id="@+id/bottomNavigation" 
-            android:layout_width="match_parent" 
-            android:layout_height="70dp" 
-            app:menu="@menu/bottom_nav" 
-            android:background="#FFFFFF" 
-            app:itemTextColor="#1976D2" 
-            app:itemIconTint="#1976D2" 
-            android:elevation="16dp"/>
+        <!-- شريط التنقل السفلي -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:menu="@menu/bottom_nav"
+            android:background="#FFFFFF"
+            app:itemTextColor="#1976D2"
+            app:itemIconTint="#1976D2"
+            android:elevation="16dp" />
 
-        <!-- المحتوى الإضافي الذي كان موجودًا في الـ LinearLayout الأصلي -->
-        <EditText 
-            android:id="@+id/searchField" 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content"/>
-        <Button 
-            android:id="@+id/searchBtn" 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content"/>
-        <View 
-            android:id="@+id/friendCard" 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content"/>
-        <TextView 
-            android:id="@+id/friendNameTxt" 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content"/>
-        <Button 
-            android:id="@+id/startChatBtn" 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content"/>
-            
+        <!-- عناصر إضافية (قد تكون مرتبطة بشاشات أخرى) -->
+        <EditText
+            android:id="@+id/searchField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/searchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:id="@+id/friendCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/friendNameTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/startChatBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </RelativeLayout>
