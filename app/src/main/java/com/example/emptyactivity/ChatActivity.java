@@ -22,6 +22,8 @@ public class ChatActivity extends AppCompatActivity {
         friendUid = getIntent().getStringExtra("friendUid");
         myUid = FirebaseAuth.getInstance().getUid();
         mDb = FirebaseDatabase.getInstance().getReference();
+        
+        // غرفة دردشة فريدة
         chatRoom = myUid.compareTo(friendUid) < 0 ? myUid + friendUid : friendUid + myUid;
 
         chatLog = findViewById(R.id.chatLog);
