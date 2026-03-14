@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+        android:id="@+id/nav_chats" 
+        android:icon="@android:drawable/ic_dialog_email" 
+        android:title="المحادثات"/>
+        
+    <item 
+        android:id="@+id/nav_contacts" 
+        android:icon="@android:drawable/ic_menu_myplaces" 
+        android:title="جهات الاتصال"/>
+        
+    <item 
+        android:id="@+id/nav_calls" 
+        android:icon="@android:drawable/ic_menu_call" 
+        android:title="المكالمات"/>
+
+    <item 
+        android:id="@+id/nav_settings" 
+        android:icon="@android:drawable/ic_menu_manage" 
+        android:title="الإعدادات"/>
+</menu>
