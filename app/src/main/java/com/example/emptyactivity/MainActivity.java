@@ -1,20 +1,28 @@
 package com.example.emptyactivity;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    
-    private View loadingView, setupView, mainView;
-    private EditText tokenIn, chatIn, msgIn, phoneIn;
-    private SharedPreferences prefs;
+
+    private View loadingView, authView, dashboardView;
+    private EditText regName, regUser, regPhone, searchUser;
+    private TextView resultTxt;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,88 +31,87 @@ public class MainActivity extends AppCompatActivity {
 
         // ربط العناصر
         loadingView = findViewById(R.id.loadingView);
-        setupView = findViewById(R.id.setupView);
-        mainView = findViewById(R.id.mainView);
-        
-        tokenIn = findViewById(R.id.tokenInput);
-        chatIn = findViewById(R.id.chatIdInput);
-        msgIn = findViewById(R.id.messageInput);
-        phoneIn = findViewById(R.id.phoneInput); // مربع رقم التليفون الجديد
+        authView = findViewById(R.id.authView);
+        dashboardView = findViewById(R.id.dashboardView);
+        regName = findViewById(R.id.regName);
+        regUser = findViewById(R.id.regUsername);
+        regPhone = findViewById(R.id.regPhone);
+        searchUser = findViewById(R.id.searchUsername);
+        resultTxt = findViewById(R.id.searchResult);
 
-        prefs = getSharedPreferences("HussainData", MODE_PRIVATE);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // شاشة التحميل 3 ثواني
+        // 1. شاشة تحميل
         new Handler().postDelayed(() -> {
             loadingView.setVisibility(View.GONE);
-            if (prefs.getString("token", "").isEmpty()) {
-                setupView.setVisibility(View.VISIBLE);
+            if (mAuth.getCurrentUser() == null) {
+                authView.setVisibility(View.VISIBLE);
             } else {
-                mainView.setVisibility(View.VISIBLE);
-                startBgService();
+                dashboardView.setVisibility(View.VISIBLE);
             }
         }, 3000);
 
-        // زر الحفظ
-        findViewById(R.id.saveBtn).setOnClickListener(v -> {
-            saveUserAccount();
-            setupView.setVisibility(View.GONE);
-            mainView.setVisibility(View.VISIBLE);
-            startBgService();
-        });
+        // 2. زر التسجيل في منصة حسين
+        findViewById(R.id.registerBtn).setOnClickListener(v -> registerOnPlatform());
 
-        // زر الإرسال
-        findViewById(R.id.sendBtn).setOnClickListener(v -> sendTelegramMsg());
-
-        // زر مشاركة حساب حسين (Hussain ID)
-        findViewById(R.id.shareAccountBtn).setOnClickListener(v -> shareHussainAccount());
+        // 3. زر البحث عن صديق باليوزر نيم
+        findViewById(R.id.searchBtn).setOnClickListener(v -> searchFriendByUsername());
     }
 
-    private void saveUserAccount() {
-        prefs.edit()
-            .putString("token", tokenIn.getText().toString())
-            .putString("chat", chatIn.getText().toString())
-            .putString("my_phone", phoneIn.getText().toString())
-            .apply();
-        Toast.makeText(this, "تم إنشاء Hussain ID بنجاح!", Toast.LENGTH_SHORT).show();
-    }
+    private void registerOnPlatform() {
+        String name = regName.getText().toString();
+        String username = regUser.getText().toString();
+        String phone = regPhone.getText().toString();
 
-    private void shareHussainAccount() {
-        String phoneNumber = prefs.getString("my_phone", phoneIn.getText().toString());
-        
-        if (phoneNumber.isEmpty()) {
-            Toast.makeText(this, "يرجى كتابة رقمك أولاً", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || username.isEmpty() || phone.isEmpty()) {
+            Toast.makeText(this, "يرجى ملء كافة البيانات", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String myId = "🚀 بطاقة هوية Hussain Ultra\n" +
-                      "👤 الاسم: المبرمج حسين\n" +
-                      "📱 الرقم: " + phoneNumber + "\n" +
-                      "✨ تم البرمجة بواسطة: Hussain-Worm-GPT\n" +
-                      "تحياتي من العراق 🇮🇶";
+        // تسجيل دخول وهمي (لأغراض التجربة) أو ربطه بـ Firebase Auth
+        mAuth.signInAnonymously().addOnSuccessListener(authResult -> {
+            String uid = mAuth.getUid();
+            HashMap<String, Object> userMap = new HashMap<>();
+            userMap.put("name", name);
+            userMap.put("username", username.toLowerCase());
+            userMap.put("phone", phone);
 
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, myId);
-        startActivity(Intent.createChooser(shareIntent, "مشاركة حسابي عبر..."));
+            // حفظ بياناتك في "قائمة مستخدمي منصة حسين"
+            mDatabase.child("HussainUsers").child(uid).setValue(userMap);
+            // حفظ اليوزر نيم في قائمة البحث السريع
+            mDatabase.child("Usernames").child(username.toLowerCase()).setValue(uid);
+
+            authView.setVisibility(View.GONE);
+            dashboardView.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "أهلاً بك في Hussain Ultra!", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void startBgService() {
-        Intent i = new Intent(this, TelegramService.class);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            startForegroundService(i);
-        } else {
-            startService(i);
-        }
-    }
+    private void searchFriendByUsername() {
+        String query = searchUser.getText().toString().toLowerCase();
+        resultTxt.setText("جارِ البحث عن " + query + "...");
 
-    private void sendTelegramMsg() {
-        String t = prefs.getString("token", ""), c = prefs.getString("chat", ""), m = msgIn.getText().toString();
-        new Thread(() -> {
-            try {
-                java.net.URL url = new java.net.URL("https://api.telegram.org/bot" + t + "/sendMessage?chat_id=" + c + "&text=" + m);
-                ((java.net.HttpURLConnection) url.openConnection()).getResponseCode();
-                runOnUiThread(() -> Toast.makeText(this, "✅ تم الإرسال", Toast.LENGTH_SHORT).show());
-            } catch (Exception e) {}
-        }).start();
+        mDatabase.child("Usernames").child(query).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String friendUid = snapshot.getValue(String.class);
+                    // جلب معلومات الصديق
+                    mDatabase.child("HussainUsers").child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot userSnapshot) {
+                            String fName = userSnapshot.child("name").getValue(String.class);
+                            String fPhone = userSnapshot.child("phone").getValue(String.class);
+                            resultTxt.setText("✅ تم العثور على الصديق:\nالاسم: " + fName + "\nالرقم: " + fPhone + "\nيمكنك مراسلته الآن!");
+                        }
+                        @Override public void onCancelled(DatabaseError error) {}
+                    });
+                } else {
+                    resultTxt.setText("❌ اليوزر غير موجود في منصة حسين");
+                }
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
     }
 }
