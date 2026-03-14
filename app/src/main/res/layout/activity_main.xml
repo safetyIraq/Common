@@ -1,121 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorDarkBackground"
-    android:fillViewport="true"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="20dp"
+    android:background="@color/white">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="تسجيل الدخول"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="30dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
-
-        <TextView
-            android:id="@+id/logoText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:fontFamily="sans-serif-condensed-light"
-            android:letterSpacing="0.1"
-            android:text="HUSSAIN ULTRA"
-            android:textColor="@color/colorNeonGreen"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/emailInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxCornerRadiusTopStart="25dp"
+        app:boxCornerRadiusBottomEnd="25dp"
+        app:boxCornerRadiusBottomStart="25dp"
+        app:boxCornerRadiusTopEnd="25dp"
+        app:startIconDrawable="@android:drawable/ic_menu_myplaces"
+        android:layout_marginBottom="15dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/regUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:hint="الايميل (example@mail.com)"
-            android:textColorHint="#999999"
-            app:boxStrokeColor="@color/colorNeonGreen"
-            app:boxStrokeWidthFocused="2dp"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
-            app:startIconTint="@color/colorNeonGreen"
-            app:hintTextColor="@color/colorNeonGreen"
-            app:layout_constraintTop_toBottomOf="@id/logoText">
+            android:hint="اسم المستخدم أو البريد الإلكتروني"
+            android:gravity="right" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/regEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/white" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/passInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxCornerRadiusTopStart="25dp"
+        app:boxCornerRadiusBottomEnd="25dp"
+        app:boxCornerRadiusBottomStart="25dp"
+        app:boxCornerRadiusTopEnd="25dp"
+        app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+        app:passwordToggleEnabled="true"
+        android:layout_marginBottom="5dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/regPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="الرمز (Password)"
-            android:textColorHint="#999999"
-            app:boxStrokeColor="@color/colorNeonGreen"
-            app:boxCornerRadiusAround="12dp"
-            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-            app:startIconTint="@color/colorNeonGreen"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/colorNeonGreen"
-            app:hintTextColor="@color/colorNeonGreen"
-            app:layout_constraintTop_toBottomOf="@id/emailInputLayout">
+            android:hint="كلمة المرور"
+            android:inputType="textPassword"
+            android:gravity="right" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/regPass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:textColor="@color/white" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="نسيت كلمة المرور؟"
+        android:textColor="@color/blue_primary"
+        android:layout_gravity="right"
+        android:layout_marginBottom="20dp"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/userInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="اليوزر نيم (Username)"
-            android:textColorHint="#999999"
-            app:boxStrokeColor="@color/colorNeonGreen"
-            app:boxCornerRadiusAround="12dp"
-            app:startIconDrawable="@android:drawable/ic_menu_myplaces"
-            app:startIconTint="@color/colorNeonGreen"
-            app:hintTextColor="@color/colorNeonGreen"
-            app:layout_constraintTop_toBottomOf="@id/passInputLayout">
+    <Button
+        android:id="@+id/loginBtn"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="تسجيل الدخول"
+        android:backgroundTint="@color/blue_primary"
+        android:textColor="@color/white"
+        app:cornerRadius="15dp"
+        android:textSize="18sp"
+        android:layout_marginBottom="30dp"/>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/regUser"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textColor="@color/white" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="أو تسجيل الدخول عبر:"
+        android:textColor="@color/black"
+        android:layout_marginBottom="20dp"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/registerBtn"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginTop="40dp"
-            android:backgroundTint="@color/colorNeonGreen"
-            android:text="دخول 🔥"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:elevation="8dp"
-            app:cornerRadius="12dp"
-            app:layout_constraintTop_toBottomOf="@id/userInputLayout" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageButton
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@android:drawable/ic_menu_info_details"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_marginRight="20dp"/>
+        <ImageButton
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@android:drawable/ic_menu_view"
+            android:background="@android:drawable/screen_background_light_transparent"/>
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ليس لديك حساب؟ إنشاء حساب جديد"
+        android:textColor="@color/blue_primary"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"/>
+
+</LinearLayout>
