@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ========== الأساسيات ========== -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="blue_primary">#1976D2</color>
-    <color name="blue_dark">#121212</color> 
+    <color name="blue_primary">#2B93E1</color>
     
-    <color name="blue_dark_vip">#0A192F</color>
-    <color name="bg_light_dashboard">#F5F7FA</color>
-
+    <!-- ========== ألوان الخلفيات ========== -->
+    <color name="bg_dark_main">#1C242F</color>
+    <color name="bg_dark_card">#232E3C</color>
     <color name="glass_dark_box">#66000000</color>
-    <color name="glass_stroke">#4DFFFFFF</color>
+    
+    <!-- ========== ألوان النصوص ========== -->
+    <color name="text_secondary">#8A99A8</color>
     <color name="text_hint">#80FFFFFF</color>
-
-    <color name="colorNeonGreen">#00E676</color>
-    <color name="glass_white_outlined">#33FFFFFF</color>
-    <color name="glass_white_solid">#E6FFFFFF</color>
-
+    
+    <!-- ========== ألوان الأيقونات ========== -->
+    <color name="icon_blue">#33A8E6</color>
+    <color name="icon_orange">#F28C38</color>
+    <color name="icon_green">#38C172</color>
+    <color name="icon_red">#E35B5B</color>
+    <color name="icon_purple">#B366FF</color>
+    
+    <!-- ========== ألوان وسائل التواصل ========== -->
     <color name="colorFacebook">#1877F2</color>
     <color name="colorGoogle">#DB4437</color>
-
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     
-    <color name="gray_100">#F5F5F5</color>
-    <color name="gray_400">#BDBDBD</color>
-    <color name="gray_divider">#333333</color>
+    <!-- ========== ألوان الحدود والتأثيرات ========== -->
+    <color name="divider_color">#151E27</color>
+    <color name="glass_stroke">#4DFFFFFF</color>
 </resources>
