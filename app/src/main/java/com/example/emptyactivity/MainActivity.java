@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,8 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private View loadingView, authView, dashboardView, friendCard;
-    private TextInputEditText regEmail, regPass, regUser, searchField;
+    private TextInputEditText regEmail, regPass, regUser;
+    private EditText searchField;
     private TextView friendNameTxt;
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ربط الواجهة بالعقل
+        // ربط العناصر بدقة
         loadingView = findViewById(R.id.loadingView);
         authView = findViewById(R.id.authView);
         dashboardView = findViewById(R.id.dashboardView);
@@ -40,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
-        // مؤقت الشاشة (اللودينج)
+        // مؤقت الشاشة التحميل
         new Handler().postDelayed(() -> {
             if (loadingView != null) loadingView.setVisibility(View.GONE);
             if (mAuth.getCurrentUser() != null) {
-                dashboardView.setVisibility(View.VISIBLE);
+                if (dashboardView != null) dashboardView.setVisibility(View.VISIBLE);
             } else {
-                authView.setVisibility(View.VISIBLE);
+                if (authView != null) authView.setVisibility(View.VISIBLE);
             }
         }, 2500);
 
@@ -69,11 +71,10 @@ public class MainActivity extends AppCompatActivity {
         String user = regUser.getText().toString().toLowerCase().trim();
 
         if (email.isEmpty() || pass.length() < 6 || user.isEmpty()) {
-            Toast.makeText(this, "عيني حسين، املأ البيانات (الرمز 6 مراتب)!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "عيني حسين، املأ كل الحقول (الرمز 6 أرقام)!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // محاولة تسجيل أو دخول
         mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 String uid = mAuth.getUid();
@@ -102,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     foundFriendUid = snapshot.getValue(String.class);
                     
-                    // منع ظهور يوزرك في البحث (مثل ما طلبت ✅)
+                    // التعديل اللي طلبته: إذا يوزرك ما يطلع بالبحث
                     if (foundFriendUid.equals(mAuth.getUid())) {
-                        Toast.makeText(MainActivity.this, "هذا يوزرك يا بطل! ابحث عن أصدقائك.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "هذا يوزرك! ابحث عن صديقك.", Toast.LENGTH_SHORT).show();
                         if (friendCard != null) friendCard.setVisibility(View.GONE);
                         return;
                     }
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override public void onCancelled(DatabaseError error) {}
                     });
                 } else {
-                    Toast.makeText(MainActivity.this, "اليوزر غير موجود في المنصة!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "اليوزر غير موجود في حسين ألترا!", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override public void onCancelled(DatabaseError error) {}
