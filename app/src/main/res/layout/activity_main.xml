@@ -101,11 +101,76 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout android:id="@+id/dashboardView" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone">
-        <EditText android:id="@+id/searchField" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <Button android:id="@+id/searchBtn" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <View android:id="@+id/friendCard" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <TextView android:id="@+id/friendNameTxt" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <Button android:id="@+id/startChatBtn" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <!-- تم دمج الـ RelativeLayout الأول هنا داخل LinearLayout مع الحفاظ على المحتوى -->
+    <LinearLayout android:id="@+id/dashboardView" 
+        android:layout_width="match_parent" 
+        android:layout_height="match_parent" 
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <!-- محتوى الـ RelativeLayout الأول -->
+        <com.google.android.material.appbar.AppBarLayout 
+            android:id="@+id/topBar" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
+            <androidx.appcompat.widget.Toolbar 
+                android:id="@+id/mainToolbar"
+                android:layout_width="match_parent" 
+                android:layout_height="?attr/actionBarSize" 
+                app:title="Connectify" 
+                app:titleTextColor="#000000" 
+                android:elevation="4dp"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout 
+            android:id="@+id/fragmentContainer" 
+            android:layout_width="match_parent" 
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            
+            <TextView 
+                android:id="@+id/tabContentText" 
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:text="قائمة المحادثات" 
+                android:layout_gravity="center" 
+                android:textSize="24sp" 
+                android:textColor="#000000" 
+                android:textStyle="bold"/>
+        </FrameLayout>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView 
+            android:id="@+id/bottomNavigation" 
+            android:layout_width="match_parent" 
+            android:layout_height="70dp" 
+            app:menu="@menu/bottom_nav" 
+            android:background="#FFFFFF" 
+            app:itemTextColor="#1976D2" 
+            app:itemIconTint="#1976D2" 
+            android:elevation="16dp"/>
+
+        <!-- المحتوى الإضافي الذي كان موجودًا في الـ LinearLayout الأصلي -->
+        <EditText 
+            android:id="@+id/searchField" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"/>
+        <Button 
+            android:id="@+id/searchBtn" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"/>
+        <View 
+            android:id="@+id/friendCard" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"/>
+        <TextView 
+            android:id="@+id/friendNameTxt" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"/>
+        <Button 
+            android:id="@+id/startChatBtn" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"/>
+            
     </LinearLayout>
 </RelativeLayout>
