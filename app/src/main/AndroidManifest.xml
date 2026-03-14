@@ -1,13 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.emptyactivity">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:label="Hussain Ultra"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:background="#000000">
 
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
@@ -15,10 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        
         <service android:name=".TelegramService" android:foregroundServiceType="dataSync" />
-
-        <receiver android:name=".ReplyReceiver" android:exported="false" />
-
     </application>
 </manifest>
