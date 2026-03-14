@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void searchFriend() {
         String query = searchField.getText().toString().toLowerCase().trim();
+        if (query.isEmpty()) return;
         mDb.child("Usernames").child(query).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot s) {
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     foundFriendUid = s.getValue(String.class);
                     if (foundFriendUid.equals(mAuth.getUid())) {
                         Toast.makeText(MainActivity.this, "هذا أنت يا حسين!", Toast.LENGTH_SHORT).show();
+                        friendCard.setVisibility(View.GONE);
                         return;
                     }
                     mDb.child("Users").child(foundFriendUid).child("username").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -96,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                         @Override public void onCancelled(DatabaseError e) {}
                     });
+                } else {
+                    Toast.makeText(MainActivity.this, "غير موجود!", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override public void onCancelled(DatabaseError e) {}
