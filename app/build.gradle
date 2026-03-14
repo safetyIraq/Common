@@ -20,9 +20,9 @@ android {
     signingConfigs {
         release {
             storeFile file("hussain.jks") // تأكد الملف بداخل مجلد app
-            storePassword "123456"
+            storePassword "078536535"
             keyAlias "connectify"
-            keyPassword "123456"
+            keyPassword "078536535"
         }
     }
 
