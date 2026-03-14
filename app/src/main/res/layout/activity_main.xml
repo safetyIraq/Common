@@ -5,140 +5,49 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <LinearLayout
-        android:id="@+id/loadingView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="visible">
-        <ProgressBar
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:indeterminateTint="#00E676" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="HUSSAIN ULTRA"
-            android:textColor="#00E676"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.2" />
+    <LinearLayout android:id="@+id/loadingView" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
+        <ProgressBar android:layout_width="80dp" android:layout_height="80dp" android:indeterminateTint="#00E676" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/authView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="25dp"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="تسجيل الدخول"
-            android:textColor="#00E676"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="40dp" />
-
+    <LinearLayout android:id="@+id/authView" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical" android:padding="25dp" android:visibility="gone">
+        
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:hint="الايميل السحابي"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
-            app:startIconTint="#00E676"
-            app:boxStrokeColor="#00E676"
-            app:hintTextColor="#00E676"
-            app:boxCornerRadiusTopStart="15dp"
-            app:boxCornerRadiusTopEnd="15dp"
-            app:boxCornerRadiusBottomStart="15dp"
-            app:boxCornerRadiusBottomEnd="15dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/regEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF" />
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp" android:hint="الايميل"
+            app:boxStrokeColor="#00E676" app:hintTextColor="#00E676"
+            app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" 
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/regEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFF"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:hint="كلمة المرور"
-            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-            app:startIconTint="#00E676"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#00E676"
-            app:boxStrokeColor="#00E676"
-            app:hintTextColor="#00E676"
-            app:boxCornerRadiusTopStart="15dp"
-            app:boxCornerRadiusTopEnd="15dp"
-            app:boxCornerRadiusBottomStart="15dp"
-            app:boxCornerRadiusBottomEnd="15dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/regPass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:textColor="#FFFFFF" />
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp" android:hint="الرمز"
+            app:boxStrokeColor="#00E676" app:hintTextColor="#00E676"
+            app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" 
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:passwordToggleEnabled="true" app:passwordToggleTint="#00E676">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/regPass" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:textColor="#FFF"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="يوزر نيم المنصة"
-            app:startIconDrawable="@android:drawable/ic_menu_myplaces"
-            app:startIconTint="#00E676"
-            app:boxStrokeColor="#00E676"
-            app:hintTextColor="#00E676"
-            app:boxCornerRadiusTopStart="15dp"
-            app:boxCornerRadiusTopEnd="15dp"
-            app:boxCornerRadiusBottomStart="15dp"
-            app:boxCornerRadiusBottomEnd="15dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/regUser"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF" />
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp" android:hint="اليوزر"
+            app:boxStrokeColor="#00E676" app:hintTextColor="#00E676"
+            app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" 
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/regUser" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFF"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/registerBtn"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:text="دخول المنصة 🔥"
-            android:backgroundTint="#00E676"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            app:cornerRadius="15dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/registerBtn" android:layout_width="match_parent" android:layout_height="60dp" android:text="دخول 🔥" android:backgroundTint="#00E676" android:textColor="#000" app:cornerRadius="12dp"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/dashboardView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:visibility="gone">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ابحث عن أصدقائك"
-            android:textColor="#00E676"
-            android:textSize="20sp"
-            android:layout_marginBottom="20dp"/>
-        <EditText android:id="@+id/searchField" android:layout_width="match_parent" android:layout_height="55dp" android:hint="يوزر الصديق..." android:textColor="#FFF" android:background="@android:drawable/editbox_background_normal" android:padding="10dp"/>
+    <LinearLayout android:id="@+id/dashboardView" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="20dp" android:visibility="gone">
+        <EditText android:id="@+id/searchField" android:layout_width="match_parent" android:layout_height="55dp" android:hint="يوزر الصديق" android:textColor="#FFF" android:background="@android:drawable/editbox_background_normal" android:padding="10dp"/>
         <Button android:id="@+id/searchBtn" android:layout_width="match_parent" android:layout_height="55dp" android:text="بحث" android:layout_marginTop="10dp" android:backgroundTint="#2196F3"/>
-        <TextView android:id="@+id/friendNameTxt" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#00E676" android:gravity="center" android:layout_marginTop="30dp" android:textSize="18sp"/>
+        <TextView android:id="@+id/friendNameTxt" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#00E676" android:gravity="center" android:layout_marginTop="30dp"/>
     </LinearLayout>
-
 </FrameLayout>
