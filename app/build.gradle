@@ -5,33 +5,33 @@ plugins {
 
 android {
     namespace 'com.example.emptyactivity'
-    compileSdk 34
+    compileSdk 34 // لضمان التوافقية
 
     defaultConfig {
         applicationId "com.example.emptyactivity"
-        minSdk 23
+        minSdk 23 // ضروري للفايربيس
         targetSdk 34
         versionCode 6
         versionName "6.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // 🔥 بلوك التوقيع الدائم (لربط مفتاح hussain.jks اللي سويته بالتيرمكس)
+    // 🔥 بلوك التوقيع الدائمي لربط مفتاح hussain.jks (من Termux)
     signingConfigs {
         release {
-            storeFile file("hussain.jks")
-            storePassword "078536535"
+            storeFile file("hussain.jks") // تأكد الملف بداخل مجلد app
+            storePassword "123456"
             keyAlias "connectify"
-            keyPassword "078536535"
+            keyPassword "123456"
         }
     }
 
     buildTypes {
         debug {
-            // نجبر نسخة التجربة (Debug) تستخدم المفتاح الدائم حتى يشتغل جوجل
+            // نجبر نسخة التجربة تستخدم المفتاح الدائم حتى يشتغل جوجل
             signingConfig signingConfigs.release 
         }
         release {
-            // نسخة النشر (Release) تستخدم المفتاح الدائم
             signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -43,7 +43,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // 🔥 الضربة القاضية لمشكلة تكرار كلاسات الكوتلن (Duplicate Class)
+    // 🔥 حل مشكلة تكرار كلاسات الكوتلن نهائياً
     configurations.all {
         resolutionStrategy {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
@@ -53,16 +53,21 @@ android {
 }
 
 dependencies {
-    // مكتبات الواجهة والتصميم الحديثة
+    // مكتبات الواجهة الأساسية Material 3
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    implementation 'androidx.navigation:navigation-fragment:2.7.7'
+    implementation 'androidx.navigation:navigation-ui:2.7.7'
 
-    // منصة فايربيس (إدارة الحسابات وقاعدة البيانات)
+    // منصة فايربيس (إدارة الحسابات وقاعدة البيانات) BOM
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
     
-    // مكتبة جوجل الرسمية لتسجيل الدخول (Google Sign-In)
+    // مكتبة جوجل الرسمية لتسجيل الدخول
     implementation 'com.google.android.gms:play-services-auth:21.0.0'
+
+    // مكتبة Glider لتحميل الصور (للآفاتار والبحث)
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
 }
