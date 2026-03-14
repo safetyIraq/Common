@@ -4,17 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    private View loadingView, authView, dashboardView, friendCard;
+    private View loadingView, authView, dashboardView;
     private TextInputEditText regEmail, regPass, regUser, searchField;
-    private android.widget.TextView friendNameTxt;
+    private TextView friendNameTxt;
+    private View friendCard;
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
     private String foundFriendUid = "";
@@ -24,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ربط العناصر
+        // ربط الواجهة بالعقل
         loadingView = findViewById(R.id.loadingView);
         authView = findViewById(R.id.authView);
         dashboardView = findViewById(R.id.dashboardView);
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
-        // فحص حالة الدخول
+        // مؤقت الشاشة السوداء (اللودينج)
         new Handler().postDelayed(() -> {
             if (loadingView != null) loadingView.setVisibility(View.GONE);
             if (mAuth.getCurrentUser() != null) {
@@ -47,8 +50,9 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 authView.setVisibility(View.VISIBLE);
             }
-        }, 3000);
+        }, 2500);
 
+        // أزرار التحكم
         findViewById(R.id.registerBtn).setOnClickListener(v -> handleAuth());
         findViewById(R.id.searchBtn).setOnClickListener(v -> searchFriend());
         
@@ -67,10 +71,11 @@ public class MainActivity extends AppCompatActivity {
         String user = regUser.getText().toString().toLowerCase().trim();
 
         if (email.isEmpty() || pass.length() < 6 || user.isEmpty()) {
-            Toast.makeText(this, "عيني حسين، املأ البيانات صح!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "عيني حسين، املأ البيانات (الرمز 6 مراتب)!", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // محاولة تسجيل أو دخول
         mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 String uid = mAuth.getUid();
@@ -99,9 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     foundFriendUid = snapshot.getValue(String.class);
                     
-                    // منع ظهور يوزرك في البحث
+                    // منع ظهور يوزرك في البحث (مثل ما طلبت ✅)
                     if (foundFriendUid.equals(mAuth.getUid())) {
-                        Toast.makeText(MainActivity.this, "هذا يوزرك! ابحث عن صديقك.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "هذا يوزرك يا بطل! ابحث عن أصدقائك.", Toast.LENGTH_SHORT).show();
                         if (friendCard != null) friendCard.setVisibility(View.GONE);
                         return;
                     }
@@ -110,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot s) {
                             if (s.exists()) {
-                                friendNameTxt.setText("تم العثور على: @" + s.getValue().toString());
+                                friendNameTxt.setText("✅ تم العثور على: @" + s.getValue().toString());
                                 if (friendCard != null) friendCard.setVisibility(View.VISIBLE);
                             }
                         }
                         @Override public void onCancelled(DatabaseError error) {}
                     });
                 } else {
-                    Toast.makeText(MainActivity.this, "اليوزر غير موجود!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "اليوزر غير موجود في المنصة!", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override public void onCancelled(DatabaseError error) {}
