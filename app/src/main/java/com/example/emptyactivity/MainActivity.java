@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,8 +14,7 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private View loadingView, authView, dashboardView, friendCard;
-    private TextInputEditText regEmail, regPass, regUser;
-    private EditText searchField;
+    private TextInputEditText regEmail, regPass, regUser, searchField;
     private TextView friendNameTxt;
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
@@ -27,12 +25,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ربط العناصر بدقة
         loadingView = findViewById(R.id.loadingView);
         authView = findViewById(R.id.authView);
         dashboardView = findViewById(R.id.dashboardView);
         friendCard = findViewById(R.id.friendCard);
-        
         regEmail = findViewById(R.id.regEmail);
         regPass = findViewById(R.id.regPass);
         regUser = findViewById(R.id.regUser);
@@ -42,38 +38,26 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
-        // مؤقت الشاشة التحميل
         new Handler().postDelayed(() -> {
             if (loadingView != null) loadingView.setVisibility(View.GONE);
-            if (mAuth.getCurrentUser() != null) {
-                if (dashboardView != null) dashboardView.setVisibility(View.VISIBLE);
-            } else {
-                if (authView != null) authView.setVisibility(View.VISIBLE);
-            }
-        }, 2500);
+            if (mAuth.getCurrentUser() != null) dashboardView.setVisibility(View.VISIBLE);
+            else authView.setVisibility(View.VISIBLE);
+        }, 2000);
 
-        // أزرار التحكم
         findViewById(R.id.registerBtn).setOnClickListener(v -> handleAuth());
         findViewById(R.id.searchBtn).setOnClickListener(v -> searchFriend());
-        
-        if (findViewById(R.id.startChatBtn) != null) {
-            findViewById(R.id.startChatBtn).setOnClickListener(v -> {
-                Intent i = new Intent(this, ChatActivity.class);
-                i.putExtra("friendUid", foundFriendUid);
-                startActivity(i);
-            });
-        }
+        findViewById(R.id.startChatBtn).setOnClickListener(v -> {
+            Intent i = new Intent(this, ChatActivity.class);
+            i.putExtra("friendUid", foundFriendUid);
+            startActivity(i);
+        });
     }
 
     private void handleAuth() {
         String email = regEmail.getText().toString().trim();
         String pass = regPass.getText().toString().trim();
         String user = regUser.getText().toString().toLowerCase().trim();
-
-        if (email.isEmpty() || pass.length() < 6 || user.isEmpty()) {
-            Toast.makeText(this, "عيني حسين، املأ كل الحقول (الرمز 6 أرقام)!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (email.isEmpty() || pass.length() < 6 || user.isEmpty()) return;
 
         mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -88,43 +72,33 @@ public class MainActivity extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(email, pass).addOnSuccessListener(r -> {
                     authView.setVisibility(View.GONE);
                     dashboardView.setVisibility(View.VISIBLE);
-                }).addOnFailureListener(e -> Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                });
             }
         });
     }
 
     private void searchFriend() {
         String query = searchField.getText().toString().toLowerCase().trim();
-        if (query.isEmpty()) return;
-
         mDb.child("Usernames").child(query).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    foundFriendUid = snapshot.getValue(String.class);
-                    
-                    // التعديل اللي طلبته: إذا يوزرك ما يطلع بالبحث
+            public void onDataChange(DataSnapshot s) {
+                if (s.exists()) {
+                    foundFriendUid = s.getValue(String.class);
                     if (foundFriendUid.equals(mAuth.getUid())) {
-                        Toast.makeText(MainActivity.this, "هذا يوزرك! ابحث عن صديقك.", Toast.LENGTH_SHORT).show();
-                        if (friendCard != null) friendCard.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this, "هذا أنت يا حسين!", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
                     mDb.child("Users").child(foundFriendUid).child("username").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onDataChange(DataSnapshot s) {
-                            if (s.exists()) {
-                                friendNameTxt.setText("✅ تم العثور على: @" + s.getValue().toString());
-                                if (friendCard != null) friendCard.setVisibility(View.VISIBLE);
-                            }
+                        public void onDataChange(DataSnapshot us) {
+                            friendNameTxt.setText("@" + us.getValue().toString());
+                            friendCard.setVisibility(View.VISIBLE);
                         }
-                        @Override public void onCancelled(DatabaseError error) {}
+                        @Override public void onCancelled(DatabaseError e) {}
                     });
-                } else {
-                    Toast.makeText(MainActivity.this, "اليوزر غير موجود في حسين ألترا!", Toast.LENGTH_SHORT).show();
                 }
             }
-            @Override public void onCancelled(DatabaseError error) {}
+            @Override public void onCancelled(DatabaseError e) {}
         });
     }
 }
