@@ -11,15 +11,8 @@ android {
         applicationId "com.example.emptyactivity"
         minSdk 21
         targetSdk 35
-        versionCode 4
-        versionName "4.0"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+        versionCode 5
+        versionName "5.0"
     }
 
     compileOptions {
