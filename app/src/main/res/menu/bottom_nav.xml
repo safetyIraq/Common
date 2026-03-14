@@ -11,12 +11,7 @@
         android:title="جهات الاتصال"/>
         
     <item 
-        android:id="@+id/nav_calls" 
-        android:icon="@android:drawable/ic_menu_call" 
-        android:title="المكالمات"/>
-
-    <item 
-        android:id="@+id/nav_settings" 
+        android:id="@+id/nav_profile" 
         android:icon="@android:drawable/ic_menu_manage" 
         android:title="الإعدادات"/>
 </menu>
