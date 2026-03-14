@@ -26,18 +26,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    // هذا الجزء يحل مشكلة التكرار (Duplicate Class)
+    configurations.all {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    }
 }
 
 dependencies {
-    // المكتبات الأساسية
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    
-    // تم التعديل للإصدار اللي طلبته (1.9.0) لضمان التوافق
     implementation 'com.google.android.material:material:1.9.0'
-    
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     
-    // أدوات الفحص (الاختبار)
+    // إضافة مكتبة الـ JSON عشان الكود البرمجي يشتغل صح
+    implementation 'org.json:json:20230227'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
