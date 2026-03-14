@@ -5,36 +5,94 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <LinearLayout android:id="@+id/chatHeader"
-        android:layout_width="match_parent" android:layout_height="65dp"
-        android:background="#1A1A1A" android:gravity="center_vertical" android:padding="10dp">
-        <TextView android:id="@+id/chatWithTitle"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="دردشة حية" android:textColor="#00E676" android:textSize="18sp" android:textStyle="bold"/>
+    <LinearLayout
+        android:id="@+id/chatHeader"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="#1A1A1A"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_myplaces"
+            app:tint="#00E676" />
+
+        <TextView
+            android:id="@+id/chatTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="Hussain Ultra Chat"
+            android:textColor="#00E676"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatRecyclerView"
+    <ScrollView
+        android:id="@+id/chatScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/inputContainer"
+        android:layout_above="@+id/inputArea"
         android:layout_below="@id/chatHeader"
-        android:padding="10dp" />
+        android:padding="15dp">
 
-    <LinearLayout android:id="@+id/inputContainer"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" android:background="#1A1A1A"
-        android:orientation="horizontal" android:padding="8dp">
+        <TextView
+            android:id="@+id/chatLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="8dp"
+            android:text="ابدأ المراسلة الآن..."
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </ScrollView>
 
-        <EditText android:id="@+id/chatInput"
-            android:layout_width="0dp" android:layout_height="50dp"
-            android:layout_weight="1" android:background="@android:drawable/editbox_background_normal"
-            android:hint="اكتب رسالتك..." android:textColor="#FFF" android:padding="10dp"/>
+    <LinearLayout
+        android:id="@+id/inputArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#1A1A1A"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="اكتب رسالتك هنا..."
+            app:boxStrokeColor="#00E676"
+            app:hintTextColor="#00E676"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusBottomEnd="20dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/msgInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/sendBtn" android:layout_width="60dp" android:layout_height="50dp"
-            android:layout_marginLeft="5dp" android:backgroundTint="#00E676"
-            android:text="➤" android:textColor="#000" app:cornerRadius="10dp"/>
+            android:id="@+id/sendMsgBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="#00E676"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:text="➤"
+            android:textColor="#000"
+            android:textSize="20sp"
+            app:cornerRadius="30dp"
+            app:elevation="4dp" />
     </LinearLayout>
 
 </RelativeLayout>
