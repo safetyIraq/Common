@@ -102,6 +102,30 @@ public class MainActivity extends AppCompatActivity {
         dashboardView = findViewById(R.id.dashboardView);
         btnGoogle = findViewById(R.id.btnGoogle);
         btnFacebook = findViewById(R.id.btnFacebook);
+
+        // الكود الأول - تعريف عناصر BottomNavigation والتول بار
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        Toolbar mainToolbar = findViewById(R.id.mainToolbar);
+        TextView tabContentText = findViewById(R.id.tabContentText);
+
+        // برمجة ضغطات الشريط السفلي
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_chats) {
+                mainToolbar.setTitle("المحادثات");
+                tabContentText.setText("قائمة المحادثات ستظهر هنا");
+                return true;
+            } else if (id == R.id.nav_contacts) {
+                mainToolbar.setTitle("جهات الاتصال");
+                tabContentText.setText("قائمة جهات الاتصال ستظهر هنا");
+                return true;
+            } else if (id == R.id.nav_profile) {
+                mainToolbar.setTitle("الإعدادات");
+                tabContentText.setText("شاشة الملف الشخصي والإعدادات");
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupFirebase() {
