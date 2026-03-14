@@ -1,7 +1,5 @@
 package com.example.emptyactivity;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,9 +10,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -40,24 +41,31 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Views
     private TextInputEditText regEmail, regPass, regUser;
     private TextInputLayout layoutUser;
     private MaterialButton mainActionBtn, btnGoogle, btnFacebook;
-    private TextView tvTitle, tvSwitchPrefix, tvSwitchAction;
+    private TextView tvTitle, tvSwitchPrefix, tvSwitchAction, tabContentText, profileName;
     private ProgressBar loadingView;
-    private View authView, dashboardView;
+    private View authView, dashboardView, layoutSettings, layoutProfile, layoutChats;
+    private BottomNavigationView bottomNavigation;
+    private Toolbar mainToolbar;
 
+    // Firebase
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
+
+    // State
     private boolean isLoginMode = true;
     private GoogleSignInClient mGoogleSignInClient;
 
-    // قواعد التحقق الصارمة (عاشت إيدك عليها)
+    // Constants
     private static final Pattern PASSWORD_PATTERN = 
         Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$");
     private static final Pattern USERNAME_PATTERN = 
         Pattern.compile("^[a-zA-Z0-9._-]{3,20}$");
 
+    // Activity Result Launcher
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -84,11 +92,12 @@ public class MainActivity extends AppCompatActivity {
         setupFirebase();
         setupGoogleSignIn();
         setupClickListeners();
+        setupBottomNavigation();
         checkCurrentUser();
     }
 
     private void initViews() {
-        // تم مسح العناصر الوهمية لتجنب الكراش
+        // Auth Views
         regEmail = findViewById(R.id.regEmail);
         regPass = findViewById(R.id.regPass);
         regUser = findViewById(R.id.regUser);
@@ -99,33 +108,18 @@ public class MainActivity extends AppCompatActivity {
         tvSwitchAction = findViewById(R.id.tvSwitchAction);
         loadingView = findViewById(R.id.loadingView);
         authView = findViewById(R.id.authView);
-        dashboardView = findViewById(R.id.dashboardView);
         btnGoogle = findViewById(R.id.btnGoogle);
         btnFacebook = findViewById(R.id.btnFacebook);
 
-        // الكود الأول - تعريف عناصر BottomNavigation والتول بار
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-        Toolbar mainToolbar = findViewById(R.id.mainToolbar);
-        TextView tabContentText = findViewById(R.id.tabContentText);
-
-        // برمجة ضغطات الشريط السفلي
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_chats) {
-                mainToolbar.setTitle("المحادثات");
-                tabContentText.setText("قائمة المحادثات ستظهر هنا");
-                return true;
-            } else if (id == R.id.nav_contacts) {
-                mainToolbar.setTitle("جهات الاتصال");
-                tabContentText.setText("قائمة جهات الاتصال ستظهر هنا");
-                return true;
-            } else if (id == R.id.nav_profile) {
-                mainToolbar.setTitle("الإعدادات");
-                tabContentText.setText("شاشة الملف الشخصي والإعدادات");
-                return true;
-            }
-            return false;
-        });
+        // Dashboard Views
+        dashboardView = findViewById(R.id.dashboardView);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
+        mainToolbar = findViewById(R.id.mainToolbar);
+        tabContentText = findViewById(R.id.tabContentText);
+        layoutSettings = findViewById(R.id.layoutSettings);
+        layoutProfile = findViewById(R.id.layoutProfile);
+        layoutChats = findViewById(R.id.layoutChats);
+        profileName = findViewById(R.id.profileName);
     }
 
     private void setupFirebase() {
@@ -147,6 +141,34 @@ public class MainActivity extends AppCompatActivity {
         mainActionBtn.setOnClickListener(v -> validateAndExecute());
         btnGoogle.setOnClickListener(v -> signInWithGoogle());
         btnFacebook.setOnClickListener(v -> Toast.makeText(this, "قريباً!", Toast.LENGTH_SHORT).show());
+    }
+
+    private void setupBottomNavigation() {
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            // Hide all layouts
+            layoutSettings.setVisibility(View.GONE);
+            layoutProfile.setVisibility(View.GONE);
+            layoutChats.setVisibility(View.GONE);
+
+            if (id == R.id.nav_chats) {
+                mainToolbar.setTitle("المحادثات");
+                layoutChats.setVisibility(View.VISIBLE);
+                tabContentText.setText("قائمة المحادثات ستظهر هنا");
+            } else if (id == R.id.nav_contacts) {
+                mainToolbar.setTitle("جهات الاتصال");
+                layoutChats.setVisibility(View.VISIBLE);
+                tabContentText.setText("قائمة جهات الاتصال ستظهر هنا");
+            } else if (id == R.id.nav_settings) {
+                mainToolbar.setTitle("الإعدادات");
+                layoutSettings.setVisibility(View.VISIBLE);
+            } else if (id == R.id.nav_profile) {
+                mainToolbar.setTitle("");
+                layoutProfile.setVisibility(View.VISIBLE);
+            }
+            return true;
+        });
     }
 
     private void checkCurrentUser() {
@@ -188,16 +210,17 @@ public class MainActivity extends AppCompatActivity {
             userMap.put("username", name.toLowerCase().replaceAll("[^a-z0-9._-]", ""));
         }
 
-        mDb.child("Users").child(uid).updateChildren(userMap).addOnSuccessListener(aVoid -> {
-            Toast.makeText(MainActivity.this, "مرحباً بك!", Toast.LENGTH_SHORT).show();
-            goToDashboard();
-        }).addOnFailureListener(e -> resetUI("فشل حفظ البيانات"));
+        mDb.child("Users").child(uid).updateChildren(userMap)
+            .addOnSuccessListener(aVoid -> {
+                Toast.makeText(MainActivity.this, "مرحباً بك!", Toast.LENGTH_SHORT).show();
+                goToDashboard();
+            })
+            .addOnFailureListener(e -> resetUI("فشل حفظ البيانات"));
     }
 
     private void switchMode() {
         isLoginMode = !isLoginMode;
         
-        // تأثير حركي فخم
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         
         if (isLoginMode) {
@@ -230,38 +253,44 @@ public class MainActivity extends AppCompatActivity {
         String user = regUser.getText().toString().trim();
 
         if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            regEmail.setError("صيغة البريد غير صحيحة"); return;
+            regEmail.setError("صيغة البريد غير صحيحة"); 
+            return;
         }
 
         if (TextUtils.isEmpty(pass) || (isLoginMode && pass.length() < 6)) {
-            regPass.setError("كلمة المرور قصيرة جداً"); return;
+            regPass.setError("كلمة المرور قصيرة جداً"); 
+            return;
         } else if (!isLoginMode && !PASSWORD_PATTERN.matcher(pass).matches()) {
-            regPass.setError("يجب أن تحتوي على حروف كبيرة، صغيرة، أرقام، ورموز"); return;
+            regPass.setError("يجب أن تحتوي على حروف كبيرة، صغيرة، أرقام، ورموز"); 
+            return;
         }
 
         if (!isLoginMode && (TextUtils.isEmpty(user) || !USERNAME_PATTERN.matcher(user).matches())) {
-            regUser.setError("اسم المستخدم يجب أن يكون 3-20 حرفاً (إنجليزي وأرقام فقط)"); return;
+            regUser.setError("اسم المستخدم يجب أن يكون 3-20 حرفاً (إنجليزي وأرقام فقط)"); 
+            return;
         }
 
         setLoadingState(true);
 
         if (isLoginMode) {
-            mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(this, "مرحباً بعودتك!", Toast.LENGTH_SHORT).show();
-                    goToDashboard();
-                } else {
-                    handleAuthError("فشل تسجيل الدخول", task.getException());
-                }
-            });
+            mAuth.signInWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "مرحباً بعودتك!", Toast.LENGTH_SHORT).show();
+                        goToDashboard();
+                    } else {
+                        handleAuthError("فشل تسجيل الدخول", task.getException());
+                    }
+                });
         } else {
-            mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    saveUserData(user, email);
-                } else {
-                    handleAuthError("فشل إنشاء الحساب", task.getException());
-                }
-            });
+            mAuth.createUserWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        saveUserData(user, email);
+                    } else {
+                        handleAuthError("فشل إنشاء الحساب", task.getException());
+                    }
+                });
         }
     }
 
@@ -272,11 +301,13 @@ public class MainActivity extends AppCompatActivity {
         userMap.put("email", email);
         userMap.put("createdAt", ServerValue.TIMESTAMP);
 
-        mDb.child("Users").child(uid).setValue(userMap).addOnSuccessListener(aVoid -> {
-            mDb.child("Usernames").child(username.toLowerCase()).setValue(uid);
-            Toast.makeText(this, "تم إنشاء الحساب بنجاح!", Toast.LENGTH_SHORT).show();
-            goToDashboard();
-        }).addOnFailureListener(e -> resetUI("فشل حفظ بيانات المستخدم"));
+        mDb.child("Users").child(uid).setValue(userMap)
+            .addOnSuccessListener(aVoid -> {
+                mDb.child("Usernames").child(username.toLowerCase()).setValue(uid);
+                Toast.makeText(this, "تم إنشاء الحساب بنجاح!", Toast.LENGTH_SHORT).show();
+                goToDashboard();
+            })
+            .addOnFailureListener(e -> resetUI("فشل حفظ بيانات المستخدم"));
     }
 
     private void handleAuthError(String defaultMessage, Exception exception) {
@@ -300,18 +331,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetUI(String errorMsg) {
         setLoadingState(false);
-        if (errorMsg != null && !errorMsg.isEmpty()) Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+        if (errorMsg != null && !errorMsg.isEmpty()) {
+            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void goToDashboard() {
         setLoadingState(false);
+        
         Animation slideOut = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
         Animation slideIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
         
         authView.startAnimation(slideOut);
         authView.setVisibility(View.GONE);
         
+        // Set profile name
+        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getDisplayName() != null) {
+            profileName.setText(mAuth.getCurrentUser().getDisplayName().toUpperCase() + " •");
+        }
+        
         dashboardView.startAnimation(slideIn);
         dashboardView.setVisibility(View.VISIBLE);
+        mainToolbar.setTitle("المحادثات");
     }
 }
