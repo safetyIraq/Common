@@ -2,7 +2,6 @@ package com.example.emptyactivity;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.os.Build;
@@ -10,11 +9,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
-import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.net.HttpURLConnection;
@@ -23,111 +22,110 @@ import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
     
-    private static final String PREFS_NAME = "MyTelegramPrefs";
-    private View redDot;
-    private Handler handler = new Handler();
-    private int lastUpdateId = 0; 
-    private String latestMessage = "لا توجد رسائل";
-    private TextInputEditText tokenIn, chatIdIn, msgIn;
+    private View loadingView, setupView, mainView, redDot;
+    private EditText tokenIn, chatIn, msgIn;
+    private SharedPreferences prefs;
+    private int lastUpdateId = 0;
+    private String latestMsg = "";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) { // تم تصحيح الخطأ هنا بإضافة onCreate
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // الربط
+        loadingView = findViewById(R.id.loadingView);
+        setupView = findViewById(R.id.setupView);
+        mainView = findViewById(R.id.mainView);
         redDot = findViewById(R.id.redDot);
         tokenIn = findViewById(R.id.tokenInput);
-        chatIdIn = findViewById(R.id.chatIdInput);
+        chatIn = findViewById(R.id.chatIdInput);
         msgIn = findViewById(R.id.messageInput);
-        Button sendBtn = findViewById(R.id.sendBtn);
+        prefs = getSharedPreferences("HussainData", MODE_PRIVATE);
 
-        loadSavedData();
-        startAutoCheck();
+        // شاشة التحميل (تطلع 3 ثواني)
+        new Handler().postDelayed(() -> {
+            loadingView.setVisibility(View.GONE);
+            checkInitialData();
+        }, 3000);
 
-        sendBtn.setOnClickListener(v -> {
-            saveData();
-            sendMsg(tokenIn.getText().toString(), chatIdIn.getText().toString(), msgIn.getText().toString());
-        });
-
+        findViewById(R.id.saveBtn).setOnClickListener(v -> saveAndStart());
+        findViewById(R.id.sendBtn).setOnClickListener(v -> sendMsg());
         findViewById(R.id.bellContainer).setOnClickListener(v -> {
             redDot.setVisibility(View.GONE);
-            new AlertDialog.Builder(this).setTitle("آخر رسالة").setMessage(latestMessage).show();
+            new AlertDialog.Builder(this).setTitle("الرسالة الواردة").setMessage(latestMsg).show();
         });
     }
 
-    private void startAutoCheck() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String token = tokenIn.getText().toString();
-                if (!token.isEmpty()) fetchUpdates(token);
-                handler.postDelayed(this, 15000); // يفحص كل 15 ثانية
-            }
-        }, 15000);
+    private void checkInitialData() {
+        String t = prefs.getString("token", "");
+        if (t.isEmpty()) {
+            setupView.setVisibility(View.VISIBLE);
+        } else {
+            mainView.setVisibility(View.VISIBLE);
+            startPolling();
+        }
     }
 
-    private void fetchUpdates(String token) {
+    private void saveAndStart() {
+        prefs.edit().putString("token", tokenIn.getText().toString()).putString("chat", chatIn.getText().toString()).apply();
+        setupView.setVisibility(View.GONE);
+        mainView.setVisibility(View.VISIBLE);
+        startPolling();
+    }
+
+    private void startPolling() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fetchUpdates();
+                new Handler().postDelayed(this, 10000);
+            }
+        }, 10000);
+    }
+
+    private void fetchUpdates() {
+        String t = prefs.getString("token", "");
         new Thread(() -> {
             try {
-                URL url = new URL("https://api.telegram.org/bot" + token + "/getUpdates?offset=" + (lastUpdateId + 1));
+                URL url = new URL("https://api.telegram.org/bot" + t + "/getUpdates?offset=" + (lastUpdateId + 1));
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 Scanner s = new Scanner(conn.getInputStream()).useDelimiter("\\A");
                 String res = s.hasNext() ? s.next() : "";
-                JSONObject json = new JSONObject(res);
-                JSONArray results = json.getJSONArray("result");
-
+                JSONArray results = new JSONObject(res).getJSONArray("result");
                 if (results.length() > 0) {
                     JSONObject last = results.getJSONObject(results.length() - 1);
                     lastUpdateId = last.getInt("update_id");
-                    latestMessage = last.getJSONObject("message").getString("text");
-
+                    latestMsg = last.getJSONObject("message").getString("text");
                     runOnUiThread(() -> {
                         redDot.setVisibility(View.VISIBLE);
-                        showSystemNotification(latestMessage);
+                        showNotification(latestMsg);
                     });
                 }
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {}
         }).start();
     }
 
-    private void showSystemNotification(String message) {
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "telegram_channel";
-        
+    private void showNotification(String m) {
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            nm.createNotificationChannel(new NotificationChannel(channelId, "Bot Messages", NotificationManager.IMPORTANCE_DEFAULT));
+            nm.createNotificationChannel(new NotificationChannel("h", "H", NotificationManager.IMPORTANCE_HIGH));
         }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(android.R.drawable.stat_notify_chat)
-                .setContentTitle("رسالة جديدة من البوت")
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setAutoCancel(true);
-
-        nm.notify(1, builder.build());
+        NotificationCompat.Builder b = new NotificationCompat.Builder(this, "h")
+            .setSmallIcon(android.R.drawable.stat_notify_chat).setContentTitle("رسالة جديدة").setContentText(m)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)).setAutoCancel(true);
+        nm.notify(1, b.build());
     }
 
-    private void saveData() {
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
-            .putString("token", tokenIn.getText().toString())
-            .putString("chat", chatIdIn.getText().toString()).apply();
-    }
-
-    private void loadSavedData() {
-        SharedPreferences p = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        tokenIn.setText(p.getString("token", ""));
-        chatIdIn.setText(p.getString("chat", ""));
-    }
-
-    private void sendMsg(String t, String c, String m) {
+    private void sendMsg() {
+        String t = prefs.getString("token", "");
+        String c = prefs.getString("chat", "");
         new Thread(() -> {
             try {
-                URL url = new URL("https://api.telegram.org/bot" + t + "/sendMessage?chat_id=" + c + "&text=" + m);
+                URL url = new URL("https://api.telegram.org/bot" + t + "/sendMessage?chat_id=" + c + "&text=" + msgIn.getText().toString());
                 ((HttpURLConnection) url.openConnection()).getResponseCode();
-                runOnUiThread(() -> Toast.makeText(this, "✅ تم!", Toast.LENGTH_SHORT).show());
-            } catch (Exception e) { e.printStackTrace(); }
+                runOnUiThread(() -> Toast.makeText(this, "✅ تم الإرسال", Toast.LENGTH_SHORT).show());
+            } catch (Exception e) {}
         }).start();
     }
 }
