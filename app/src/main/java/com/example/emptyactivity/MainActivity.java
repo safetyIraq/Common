@@ -1,5 +1,6 @@
 package com.example.emptyactivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -7,11 +8,21 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
@@ -28,14 +39,35 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
-    private boolean isLoginMode = true; 
+    private boolean isLoginMode = true;
+
+    // متغيرات جوجل
+    private GoogleSignInClient mGoogleSignInClient;
+
+    // نظام الأندرويد الحديث لاستقبال نتيجة تسجيل الدخول من جوجل
+    private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                    try {
+                        GoogleSignInAccount account = task.getResult(ApiException.class);
+                        firebaseAuthWithGoogle(account.getIdToken());
+                    } catch (ApiException e) {
+                        resetUI("فشل تسجيل الدخول بجوجل: " + e.getMessage());
+                    }
+                } else {
+                    resetUI("تم إلغاء تسجيل الدخول.");
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ربط الواجهة بالكود
+        // ربط الواجهة
         regEmail = findViewById(R.id.regEmail);
         regPass = findViewById(R.id.regPass);
         regUser = findViewById(R.id.regUser);
@@ -53,17 +85,55 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
-        // تفعيل زر تبديل الواجهة (دخول / تسجيل)
+        // إعداد خيارات جوجل
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)) // هذا الكود يجيبه الفايربيس تلقائياً
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // تفعيل الأزرار
         findViewById(R.id.switchModeLayout).setOnClickListener(v -> switchMode());
-
-        // تفعيل الزر الرئيسي مع التحقق
         mainActionBtn.setOnClickListener(v -> validateAndExecute());
-
-        // أزرار السوشيال
-        btnGoogle.setOnClickListener(v -> Toast.makeText(this, "سيتم تفعيل جوجل قريباً!", Toast.LENGTH_SHORT).show());
+        
+        // تفعيل زر جوجل
+        btnGoogle.setOnClickListener(v -> signInWithGoogle());
+        
         btnFacebook.setOnClickListener(v -> Toast.makeText(this, "سيتم تفعيل فيسبوك قريباً!", Toast.LENGTH_SHORT).show());
     }
 
+    // --- دوال جوجل ---
+    private void signInWithGoogle() {
+        loadingView.setVisibility(View.VISIBLE);
+        mainActionBtn.setEnabled(false);
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        googleSignInLauncher.launch(signInIntent);
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                // حفظ بيانات المستخدم في قاعدة البيانات
+                String uid = mAuth.getUid();
+                String email = mAuth.getCurrentUser().getEmail();
+                String name = mAuth.getCurrentUser().getDisplayName(); // يجيب اسمه من جوجل
+
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("email", email);
+                if(name != null) map.put("username", name.toLowerCase().replace(" ", "")); // نسويله يوزر من اسمه
+
+                mDb.child("Users").child(uid).updateChildren(map);
+
+                Toast.makeText(MainActivity.this, "تم الدخول بحساب جوجل بنجاح!", Toast.LENGTH_SHORT).show();
+                goToDashboard();
+            } else {
+                resetUI("فشل المصادقة مع السيرفر.");
+            }
+        });
+    }
+
+    // --- دوال الايميل والباسورد (نفسها بدون تغيير) ---
     private void switchMode() {
         isLoginMode = !isLoginMode;
         if (isLoginMode) {
@@ -87,18 +157,13 @@ public class MainActivity extends AppCompatActivity {
         String user = regUser.getText().toString().trim();
 
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            regEmail.setError("يرجى إدخال بريد إلكتروني صحيح");
-            return;
+            regEmail.setError("يرجى إدخال بريد إلكتروني صحيح"); return;
         }
-
         if (pass.isEmpty() || pass.length() < 6) {
-            regPass.setError("يجب أن تكون كلمة المرور 6 أحرف على الأقل");
-            return;
+            regPass.setError("يجب أن تكون كلمة المرور 6 أحرف على الأقل"); return;
         }
-
         if (!isLoginMode && user.isEmpty()) {
-            regUser.setError("يرجى اختيار يوزر نيم");
-            return;
+            regUser.setError("يرجى اختيار يوزر نيم"); return;
         }
 
         loadingView.setVisibility(View.VISIBLE);
@@ -134,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     private void resetUI(String errorMsg) {
         loadingView.setVisibility(View.GONE);
         mainActionBtn.setEnabled(true);
-        Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+        if(!errorMsg.isEmpty()) Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
     }
 
     private void goToDashboard() {
