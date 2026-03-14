@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.microsoft.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp">
 
-    <EditText android:id="@+id/tokenInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="توكتك يحلو✨" />
-    <EditText android:id="@+id/chatIdInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="الايدي 😜" android:inputType="number" />
-    <EditText android:id="@+id/messageInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="خربط يله😂" android:lines="3" />
+    <EditText android:id="@+id/tokenInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Token البوت" />
+    <EditText android:id="@+id/chatIdInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Chat ID مالتك" android:inputType="number" />
+    <EditText android:id="@+id/messageInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="اكتب رسالتك هنا..." android:lines="3" />
 
-    <Button android:id="@+id/sendBtn" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ديله ارسل😉" android:layout_marginTop="20dp" />
+    <Button android:id="@+id/sendBtn" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="إرسال إلى تيليجرام 🚀" android:layout_marginTop="20dp" />
 </LinearLayout>
