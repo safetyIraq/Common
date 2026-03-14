@@ -1,108 +1,145 @@
 package com.example.emptyactivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Patterns;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.*;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    private View loadingView, authView, dashboardView, friendCard;
-    private TextInputEditText regEmail, regPass, regUser, searchField;
-    private TextView friendNameTxt;
+
+    private TextInputEditText regEmail, regPass, regUser;
+    private TextInputLayout layoutUser;
+    private MaterialButton mainActionBtn;
+    private TextView tvTitle, tvSwitchPrefix, tvSwitchAction;
+    private ProgressBar loadingView;
+    private View authView, dashboardView;
+    private ImageButton btnGoogle, btnFacebook;
+
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
-    private String foundFriendUid = "";
+    private boolean isLoginMode = true; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadingView = findViewById(R.id.loadingView);
-        authView = findViewById(R.id.authView);
-        dashboardView = findViewById(R.id.dashboardView);
-        friendCard = findViewById(R.id.friendCard);
+        // ربط الواجهة بالكود
         regEmail = findViewById(R.id.regEmail);
         regPass = findViewById(R.id.regPass);
         regUser = findViewById(R.id.regUser);
-        searchField = findViewById(R.id.searchField);
-        friendNameTxt = findViewById(R.id.friendNameTxt);
+        layoutUser = findViewById(R.id.layoutUser);
+        mainActionBtn = findViewById(R.id.mainActionBtn);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvSwitchPrefix = findViewById(R.id.tvSwitchPrefix);
+        tvSwitchAction = findViewById(R.id.tvSwitchAction);
+        loadingView = findViewById(R.id.loadingView);
+        authView = findViewById(R.id.authView);
+        dashboardView = findViewById(R.id.dashboardView);
+        btnGoogle = findViewById(R.id.btnGoogle);
+        btnFacebook = findViewById(R.id.btnFacebook);
 
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
-        new Handler().postDelayed(() -> {
-            if (loadingView != null) loadingView.setVisibility(View.GONE);
-            if (mAuth.getCurrentUser() != null) dashboardView.setVisibility(View.VISIBLE);
-            else authView.setVisibility(View.VISIBLE);
-        }, 2000);
+        // تفعيل زر تبديل الواجهة (دخول / تسجيل)
+        findViewById(R.id.switchModeLayout).setOnClickListener(v -> switchMode());
 
-        findViewById(R.id.registerBtn).setOnClickListener(v -> handleAuth());
-        findViewById(R.id.searchBtn).setOnClickListener(v -> searchFriend());
-        findViewById(R.id.startChatBtn).setOnClickListener(v -> {
-            Intent i = new Intent(this, ChatActivity.class);
-            i.putExtra("friendUid", foundFriendUid);
-            startActivity(i);
-        });
+        // تفعيل الزر الرئيسي مع التحقق
+        mainActionBtn.setOnClickListener(v -> validateAndExecute());
+
+        // أزرار السوشيال
+        btnGoogle.setOnClickListener(v -> Toast.makeText(this, "سيتم تفعيل جوجل قريباً!", Toast.LENGTH_SHORT).show());
+        btnFacebook.setOnClickListener(v -> Toast.makeText(this, "سيتم تفعيل فيسبوك قريباً!", Toast.LENGTH_SHORT).show());
     }
 
-    private void handleAuth() {
+    private void switchMode() {
+        isLoginMode = !isLoginMode;
+        if (isLoginMode) {
+            tvTitle.setText("تسجيل الدخول");
+            mainActionBtn.setText("تسجيل الدخول");
+            layoutUser.setVisibility(View.GONE);
+            tvSwitchPrefix.setText("ليس لديك حساب؟ ");
+            tvSwitchAction.setText("إنشاء حساب جديد");
+        } else {
+            tvTitle.setText("إنشاء حساب");
+            mainActionBtn.setText("إنشاء حساب");
+            layoutUser.setVisibility(View.VISIBLE);
+            tvSwitchPrefix.setText("لديك حساب بالفعل؟ ");
+            tvSwitchAction.setText("تسجيل الدخول");
+        }
+    }
+
+    private void validateAndExecute() {
         String email = regEmail.getText().toString().trim();
         String pass = regPass.getText().toString().trim();
-        String user = regUser.getText().toString().toLowerCase().trim();
-        if (email.isEmpty() || pass.length() < 6 || user.isEmpty()) return;
+        String user = regUser.getText().toString().trim();
 
-        mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String uid = mAuth.getUid();
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("username", user);
-                mDb.child("Users").child(uid).setValue(map);
-                mDb.child("Usernames").child(user).setValue(uid);
-                authView.setVisibility(View.GONE);
-                dashboardView.setVisibility(View.VISIBLE);
-            } else {
-                mAuth.signInWithEmailAndPassword(email, pass).addOnSuccessListener(r -> {
-                    authView.setVisibility(View.GONE);
-                    dashboardView.setVisibility(View.VISIBLE);
-                });
-            }
-        });
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            regEmail.setError("يرجى إدخال بريد إلكتروني صحيح");
+            return;
+        }
+
+        if (pass.isEmpty() || pass.length() < 6) {
+            regPass.setError("يجب أن تكون كلمة المرور 6 أحرف على الأقل");
+            return;
+        }
+
+        if (!isLoginMode && user.isEmpty()) {
+            regUser.setError("يرجى اختيار يوزر نيم");
+            return;
+        }
+
+        loadingView.setVisibility(View.VISIBLE);
+        mainActionBtn.setEnabled(false);
+
+        if (isLoginMode) {
+            mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(this, "مرحباً بك مجدداً!", Toast.LENGTH_SHORT).show();
+                    goToDashboard();
+                } else {
+                    resetUI("خطأ: تأكد من بياناتك.");
+                }
+            });
+        } else {
+            mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String uid = mAuth.getUid();
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("username", user.toLowerCase());
+                    map.put("email", email);
+                    mDb.child("Users").child(uid).setValue(map);
+                    mDb.child("Usernames").child(user.toLowerCase()).setValue(uid);
+                    Toast.makeText(this, "تم إنشاء الحساب بنجاح!", Toast.LENGTH_SHORT).show();
+                    goToDashboard();
+                } else {
+                    resetUI("فشل إنشاء الحساب.");
+                }
+            });
+        }
     }
 
-    private void searchFriend() {
-        String query = searchField.getText().toString().toLowerCase().trim();
-        if (query.isEmpty()) return;
-        mDb.child("Usernames").child(query).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot s) {
-                if (s.exists()) {
-                    foundFriendUid = s.getValue(String.class);
-                    if (foundFriendUid.equals(mAuth.getUid())) {
-                        Toast.makeText(MainActivity.this, "هذا أنت يا حسين!", Toast.LENGTH_SHORT).show();
-                        friendCard.setVisibility(View.GONE);
-                        return;
-                    }
-                    mDb.child("Users").child(foundFriendUid).child("username").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot us) {
-                            friendNameTxt.setText("@" + us.getValue().toString());
-                            friendCard.setVisibility(View.VISIBLE);
-                        }
-                        @Override public void onCancelled(DatabaseError e) {}
-                    });
-                } else {
-                    Toast.makeText(MainActivity.this, "غير موجود!", Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override public void onCancelled(DatabaseError e) {}
-        });
+    private void resetUI(String errorMsg) {
+        loadingView.setVisibility(View.GONE);
+        mainActionBtn.setEnabled(true);
+        Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+    }
+
+    private void goToDashboard() {
+        loadingView.setVisibility(View.GONE);
+        authView.setVisibility(View.GONE);
+        dashboardView.setVisibility(View.VISIBLE);
     }
 }
