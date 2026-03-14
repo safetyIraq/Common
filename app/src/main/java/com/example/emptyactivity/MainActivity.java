@@ -7,17 +7,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    private View loadingView, authView, dashboardView;
+    private View loadingView, authView, dashboardView, friendCard;
     private TextInputEditText regEmail, regPass, regUser, searchField;
     private TextView friendNameTxt;
-    private View friendCard;
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
     private String foundFriendUid = "";
@@ -42,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
-        // مؤقت الشاشة السوداء (اللودينج)
+        // مؤقت الشاشة (اللودينج)
         new Handler().postDelayed(() -> {
             if (loadingView != null) loadingView.setVisibility(View.GONE);
             if (mAuth.getCurrentUser() != null) {
