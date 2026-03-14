@@ -4,19 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private View loadingView, authView, dashboardView, friendCard;
-    private EditText regEmail, regPass, regUser, searchField;
-    private TextView friendNameTxt;
+    private TextInputEditText regEmail, regPass, regUser, searchField;
+    private android.widget.TextView friendNameTxt;
     private FirebaseAuth mAuth;
     private DatabaseReference mDb;
     private String foundFriendUid = "";
@@ -27,40 +25,40 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // ربط العناصر
-        initViews();
+        loadingView = findViewById(R.id.loadingView);
+        authView = findViewById(R.id.authView);
+        dashboardView = findViewById(R.id.dashboardView);
+        friendCard = findViewById(R.id.friendCard);
+        
+        regEmail = findViewById(R.id.regEmail);
+        regPass = findViewById(R.id.regPass);
+        regUser = findViewById(R.id.regUser);
+        searchField = findViewById(R.id.searchField);
+        friendNameTxt = findViewById(R.id.friendNameTxt);
 
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
 
         // فحص حالة الدخول
         new Handler().postDelayed(() -> {
-            loadingView.setVisibility(View.GONE);
+            if (loadingView != null) loadingView.setVisibility(View.GONE);
             if (mAuth.getCurrentUser() != null) {
                 dashboardView.setVisibility(View.VISIBLE);
             } else {
                 authView.setVisibility(View.VISIBLE);
             }
-        }, 2500);
+        }, 3000);
 
         findViewById(R.id.registerBtn).setOnClickListener(v -> handleAuth());
         findViewById(R.id.searchBtn).setOnClickListener(v -> searchFriend());
-        findViewById(R.id.startChatBtn).setOnClickListener(v -> {
-            Intent i = new Intent(this, ChatActivity.class);
-            i.putExtra("friendUid", foundFriendUid);
-            startActivity(i);
-        });
-    }
-
-    private void initViews() {
-        loadingView = findViewById(R.id.loadingView);
-        authView = findViewById(R.id.authView);
-        dashboardView = findViewById(R.id.dashboardView);
-        friendCard = findViewById(R.id.friendCard);
-        regEmail = findViewById(R.id.regEmail);
-        regPass = findViewById(R.id.regPass);
-        regUser = findViewById(R.id.regUser);
-        searchField = findViewById(R.id.searchField);
-        friendNameTxt = findViewById(R.id.friendNameTxt);
+        
+        if (findViewById(R.id.startChatBtn) != null) {
+            findViewById(R.id.startChatBtn).setOnClickListener(v -> {
+                Intent i = new Intent(this, ChatActivity.class);
+                i.putExtra("friendUid", foundFriendUid);
+                startActivity(i);
+            });
+        }
     }
 
     private void handleAuth() {
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         String user = regUser.getText().toString().toLowerCase().trim();
 
         if (email.isEmpty() || pass.length() < 6 || user.isEmpty()) {
-            Toast.makeText(this, "املأ كل البيانات يا بطل!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "عيني حسين، املأ البيانات صح!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -101,24 +99,25 @@ public class MainActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     foundFriendUid = snapshot.getValue(String.class);
                     
-                    // التعديل المطلوب: إذا بحثت عن نفسك ما تطلع
+                    // منع ظهور يوزرك في البحث
                     if (foundFriendUid.equals(mAuth.getUid())) {
-                        Toast.makeText(MainActivity.this, "هذا يوزرك يا حسين! ابحث عن أصدقائك.", Toast.LENGTH_SHORT).show();
-                        friendCard.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this, "هذا يوزرك! ابحث عن صديقك.", Toast.LENGTH_SHORT).show();
+                        if (friendCard != null) friendCard.setVisibility(View.GONE);
                         return;
                     }
 
                     mDb.child("Users").child(foundFriendUid).child("username").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot s) {
-                            friendNameTxt.setText("تم العثور على: @" + s.getValue().toString());
-                            friendCard.setVisibility(View.VISIBLE);
+                            if (s.exists()) {
+                                friendNameTxt.setText("تم العثور على: @" + s.getValue().toString());
+                                if (friendCard != null) friendCard.setVisibility(View.VISIBLE);
+                            }
                         }
                         @Override public void onCancelled(DatabaseError error) {}
                     });
                 } else {
                     Toast.makeText(MainActivity.this, "اليوزر غير موجود!", Toast.LENGTH_SHORT).show();
-                    friendCard.setVisibility(View.GONE);
                 }
             }
             @Override public void onCancelled(DatabaseError error) {}
