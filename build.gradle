@@ -1,4 +1,4 @@
-// Top-level build file
+// امسح كل شي وحط بس هذا
 plugins {
     id 'com.android.application' version '8.2.0' apply false
     id 'com.android.library' version '8.2.0' apply false
