@@ -11,8 +11,8 @@ android {
         applicationId "com.example.emptyactivity"
         minSdk 21
         targetSdk 35
-        versionCode 3
-        versionName "3.0"
+        versionCode 4
+        versionName "4.0"
     }
 
     buildTypes {
@@ -27,7 +27,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // 🔥 هذا هو الحل السحري لمشكلة الـ Duplicate Class
     configurations.all {
         exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
         exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
@@ -35,16 +34,10 @@ android {
 }
 
 dependencies {
-    // مكتبات الواجهة
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
-    
-    // منصة حسين (Firebase) - استخدمنا نسخ متوافقة
     implementation platform('com.google.firebase:firebase-bom:32.2.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-
-    // مكتبة كوتلن الأساسية (النسخة الشاملة)
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
 }
