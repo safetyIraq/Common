@@ -5,32 +5,50 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <LinearLayout android:id="@+id/loadingView" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
-        <ProgressBar android:layout_width="70dp" android:layout_height="70dp" android:indeterminateTint="#00E676" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hussain Ultra Chat" android:textColor="#00E676" android:layout_marginTop="10dp" android:textStyle="bold"/>
+    <LinearLayout android:id="@+id/loadingView" 
+        android:layout_width="match_parent" 
+        android:layout_height="match_parent" 
+        android:gravity="center" 
+        android:orientation="vertical"
+        android:background="#000000"
+        android:visibility="visible">
+        <ProgressBar android:layout_width="80dp" android:layout_height="80dp" android:indeterminateTint="#00E676" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" 
+            android:text="جاري تشغيل Hussain Ultra..." android:textColor="#00E676" android:layout_marginTop="15dp"/>
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/authView" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical" android:padding="30dp" android:visibility="gone">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إنشاء Hussain ID" android:textColor="#00E676" android:textSize="24sp" android:layout_marginBottom="30dp" android:textStyle="bold"/>
-        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="الاسم الكامل" app:boxStrokeColor="#00E676" app:hintTextColor="#00E676" android:layout_marginBottom="10dp">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/regName" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFF"/>
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="اسم المستخدم (Username)" app:boxStrokeColor="#00E676" app:hintTextColor="#00E676" android:layout_marginBottom="20dp">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/regUser" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFF"/>
-        </com.google.android.material.textfield.TextInputLayout>
-        <Button android:id="@+id/registerBtn" android:layout_width="match_parent" android:layout_height="60dp" android:text="دخول للمنصة 🚀" android:backgroundTint="#00E676" app:cornerRadius="12dp"/>
+    <LinearLayout android:id="@+id/authView" 
+        android:layout_width="match_parent" 
+        android:layout_height="match_parent" 
+        android:gravity="center" 
+        android:orientation="vertical" 
+        android:padding="30dp" 
+        android:visibility="gone">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" 
+            android:text="سجل يوزرك الخاص" android:textColor="#00E676" android:textSize="22sp" android:layout_marginBottom="20dp"/>
+        <EditText android:id="@+id/regName" android:layout_width="match_parent" android:layout_height="55dp" 
+            android:hint="الاسم" android:textColor="#FFF" android:background="@android:drawable/editbox_background_normal" android:layout_marginBottom="10dp" android:padding="10dp"/>
+        <EditText android:id="@+id/regUser" android:layout_width="match_parent" android:layout_height="55dp" 
+            android:hint="اليوزر نيم" android:textColor="#FFF" android:background="@android:drawable/editbox_background_normal" android:layout_marginBottom="20dp" android:padding="10dp"/>
+        <Button android:id="@+id/registerBtn" android:layout_width="match_parent" android:layout_height="60dp" 
+            android:text="دخول" android:backgroundTint="#00E676"/>
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/dashboardView" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone" android:padding="20dp">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="البحث عن أصدقاء" android:textColor="#00E676" android:textSize="20sp" android:layout_marginBottom="20dp" android:textStyle="bold"/>
-        <EditText android:id="@+id/searchField" android:layout_width="match_parent" android:layout_height="55dp" android:hint="اكتب يوزر صديقك..." android:textColor="#FFF" android:textColorHint="#666" android:background="@android:drawable/editbox_background_normal" android:padding="10dp"/>
-        <Button android:id="@+id/searchBtn" android:layout_width="match_parent" android:layout_height="55dp" android:text="بحث وتواصل" android:layout_marginTop="10dp" android:backgroundTint="#2196F3" app:cornerRadius="10dp"/>
+    <LinearLayout android:id="@+id/dashboardView" 
+        android:layout_width="match_parent" 
+        android:layout_height="match_parent" 
+        android:orientation="vertical" 
+        android:padding="20dp"
+        android:visibility="gone">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" 
+            android:text="ابحث عن صديق" android:textColor="#00E676" android:textSize="20sp"/>
+        <EditText android:id="@+id/searchField" android:layout_width="match_parent" android:layout_height="55dp" 
+            android:hint="يوزر الصديق..." android:textColor="#FFF" android:background="@android:drawable/editbox_background_normal" android:layout_marginTop="15dp" android:padding="10dp"/>
+        <Button android:id="@+id/searchBtn" android:layout_width="match_parent" android:layout_height="55dp" 
+            android:text="بحث" android:layout_marginTop="10dp" android:backgroundTint="#2196F3"/>
         
-        <androidx.cardview.widget.CardView android:id="@+id/friendCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="30dp" app:cardBackgroundColor="#1A1A1A" app:cardCornerRadius="15dp" android:visibility="gone">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp" android:gravity="center">
-                <TextView android:id="@+id/friendNameTxt" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#00E676" android:textSize="18sp" android:textStyle="bold"/>
-                <Button android:id="@+id/startChatBtn" android:layout_width="match_parent" android:layout_height="50dp" android:text="بدء مراسلة فورية" android:layout_marginTop="15dp" android:backgroundTint="#00E676" app:cornerRadius="10dp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <TextView android:id="@+id/friendNameTxt" android:layout_width="match_parent" android:layout_height="wrap_content" 
+            android:textColor="#FFF" android:gravity="center" android:layout_marginTop="30dp" android:textSize="18sp"/>
     </LinearLayout>
+
 </FrameLayout>
