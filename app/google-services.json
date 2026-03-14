@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218596769707",
+    "project_id": "hussain-ultra-app",
+    "storage_bucket": "hussain-ultra-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218596769707:android:b8785a9cbb335ab335dcee",
+        "android_client_info": {
+          "package_name": "com.example.emptyactivity"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTBfi6KLwUDCXSdpOa6H2zI0QuAsrQz6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
