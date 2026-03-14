@@ -1,13 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="20dp"
+    android:background="#F5F5F5">
 
-    <EditText android:id="@+id/tokenInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Token البوت" />
-    <EditText android:id="@+id/chatIdInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Chat ID مالتك" android:inputType="number" />
-    <EditText android:id="@+id/messageInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="اكتب رسالتك هنا..." android:lines="3" />
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp">
 
-    <Button android:id="@+id/sendBtn" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="إرسال إلى تيليجرام 🚀" android:layout_marginTop="20dp" />
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hussain Control"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#333"/>
+
+        <FrameLayout
+            android:id="@+id/bellContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:id="@+id/bellIcon"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@android:drawable/ic_popup_reminder"
+                android:contentDescription="Bell" />
+
+            <View
+                android:id="@+id/redDot"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:background="#FF0000"
+                android:layout_gravity="top|end"
+                android:visibility="gone" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_below="@id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText android:id="@+id/tokenInput" android:layout_width="match_parent" android:layout_height="50dp" android:hint="هاا توكن😂" android:background="@android:drawable/editbox_background" android:padding="10dp" android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/chatIdInput" android:layout_width="match_parent" android:layout_height="50dp" android:hint="حط الايدي الفاهي" android:inputType="number" android:background="@android:drawable/editbox_background" android:padding="10dp" android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/messageInput" android:layout_width="match_parent" android:layout_height="100dp" android:hint="شتريد😂" android:gravity="top" android:background="@android:drawable/editbox_background" android:padding="10dp" android:layout_marginBottom="20dp"/>
+
+        <Button android:id="@+id/sendBtn" android:layout_width="match_parent" android:layout_height="60dp" android:text="دز رساك مصلبخ😆" android:backgroundTint="#2196F3" android:textColor="#FFF"/>
+    </LinearLayout>
+
+</RelativeLayout>
