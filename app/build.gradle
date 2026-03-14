@@ -9,14 +9,30 @@ android {
 
     defaultConfig {
         applicationId "com.example.emptyactivity"
-        minSdk 23  // ضروري جداً لعمل الفايربيس الحديث
+        minSdk 23
         targetSdk 34
         versionCode 6
         versionName "6.0"
     }
 
-    buildTypes {
+    // 🔥 بلوك التوقيع الدائم (لربط مفتاح hussain.jks اللي سويته بالتيرمكس)
+    signingConfigs {
         release {
+            storeFile file("hussain.jks")
+            storePassword "078536535"
+            keyAlias "connectify"
+            keyPassword "078536535"
+        }
+    }
+
+    buildTypes {
+        debug {
+            // نجبر نسخة التجربة (Debug) تستخدم المفتاح الدائم حتى يشتغل جوجل
+            signingConfig signingConfigs.release 
+        }
+        release {
+            // نسخة النشر (Release) تستخدم المفتاح الدائم
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -27,7 +43,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // 🔥 الضربة القاضية لمشكلة Duplicate Class
+    // 🔥 الضربة القاضية لمشكلة تكرار كلاسات الكوتلن (Duplicate Class)
     configurations.all {
         resolutionStrategy {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
@@ -37,14 +53,16 @@ android {
 }
 
 dependencies {
-    // مكتبات التصميم الحديثة
+    // مكتبات الواجهة والتصميم الحديثة
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
 
-    // مكتبات الفايربيس وجوجل
+    // منصة فايربيس (إدارة الحسابات وقاعدة البيانات)
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.android.gms:play-services-auth:21.0.0' // لتسجيل الدخول بجوجل
+    
+    // مكتبة جوجل الرسمية لتسجيل الدخول (Google Sign-In)
+    implementation 'com.google.android.gms:play-services-auth:21.0.0'
 }
