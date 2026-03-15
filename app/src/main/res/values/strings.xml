@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Connectify</string>
+    <!-- ============================================================ -->
+    <!-- نصوص عامة                                                   -->
+    <!-- ============================================================ -->
+    <string name="app_name">تطبيقي</string>
     
-    <string name="default_web_client_id">218596769707-jgs8rnr1d5m520nd6tj88j0phq7i2db8.apps.googleusercontent.com</string>
+    <!-- ============================================================ -->
+    <!-- نصوص عنصر المحادثة                                          -->
+    <!-- ============================================================ -->
+    <string name="default_username">اسم المستخدم</string>
+    <string name="default_bio">النبذة التعريفية هنا...</string>
+    <string name="default_time">الآن</string>
+    <string name="profile_image_description">صورة المستخدم</string>
+    <string name="chat_button_description">فتح المحادثة</string>
+    
+    <!-- ============================================================ -->
+    <!-- حالات الاتصال                                               -->
+    <!-- ============================================================ -->
+    <string name="online">متصل</string>
+    <string name="offline">غير متصل</string>
+    <string name="typing">يكتب...</string>
 </resources>
