@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ============================================================ -->
-    <!-- نصوص عامة                                                   -->
+    <!-- اسم التطبيق                                                  -->
     <!-- ============================================================ -->
     <string name="app_name">تطبيقي</string>
     
     <!-- ============================================================ -->
-    <!-- نصوص عنصر المحادثة                                          -->
+    <!-- 🔑 مفتاح Firebase Web Client ID - مطلوب لتسجيل الدخول بجوجل  -->
+    <!-- ============================================================ -->
+    <!-- 
+        هام جداً: هذا المفتاح يأتي من ملف google-services.json
+        بعد إضافة Firebase لمشروعك، هذا المفتاح يتم إنشاؤه تلقائياً
+        إذا لم يكن موجوداً، أضف هذا السطر مؤقتاً للتجربة
+    -->
+    <string name="default_web_client_id" translatable="false">559417035417-7lqj4k7jq4k7jq4k7jq4k7jq4k7jq4k.apps.googleusercontent.com</string>
+    
+    <!-- ============================================================ -->
+    <!-- نصوص عامة                                                   -->
     <!-- ============================================================ -->
     <string name="default_username">اسم المستخدم</string>
     <string name="default_bio">النبذة التعريفية هنا...</string>
@@ -20,4 +30,57 @@
     <string name="online">متصل</string>
     <string name="offline">غير متصل</string>
     <string name="typing">يكتب...</string>
+    
+    <!-- ============================================================ -->
+    <!-- نصوص شاشة المصادقة                                           -->
+    <!-- ============================================================ -->
+    <string name="login">تسجيل الدخول</string>
+    <string name="signup">إنشاء حساب</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="or_continue_with">أو المتابعة باستخدام</string>
+    <string name="no_account">ليس لديك حساب؟</string>
+    <string name="have_account">لديك حساب بالفعل؟</string>
+    <string name="create_account">إنشاء حساب جديد</string>
+    
+    <!-- ============================================================ -->
+    <!-- نصوص الأخطاء والتنبيهات                                      -->
+    <!-- ============================================================ -->
+    <string name="error_invalid_email">صيغة البريد الإلكتروني غير صحيحة</string>
+    <string name="error_password_short">كلمة المرور قصيرة (6 أحرف على الأقل)</string>
+    <string name="error_username_required">اسم المستخدم مطلوب</string>
+    <string name="error_auth_failed">فشل المصادقة، تأكد من بياناتك</string>
+    <string name="error_google_signin_failed">فشل تسجيل الدخول بجوجل</string>
+    <string name="error_cancelled">تم إلغاء العملية</string>
+    <string name="error_save_data">خطأ في حفظ البيانات</string>
+    
+    <!-- ============================================================ -->
+    <!-- رسائل النجاح                                                -->
+    <!-- ============================================================ -->
+    <string name="success_login">تم تسجيل الدخول بنجاح</string>
+    <string name="success_signup">تم إنشاء الحساب بنجاح</string>
+    <string name="success_image_upload">تم تغيير الصورة بنجاح</string>
+    <string name="success_data_updated">تم تحديث البيانات بنجاح</string>
+    
+    <!-- ============================================================ -->
+    <!-- نصوص شريط التنقل                                             -->
+    <!-- ============================================================ -->
+    <string name="nav_chats">المحادثات</string>
+    <string name="nav_contacts">جهات الاتصال</string>
+    <string name="nav_settings">الإعدادات</string>
+    <string name="nav_profile">الملف الشخصي</string>
+    
+    <!-- ============================================================ -->
+    <!-- نصوص الملف الشخصي                                            -->
+    <!-- ============================================================ -->
+    <string name="connected">متصل</string>
+    <string name="set_image">تعيين صورة</string>
+    <string name="edit_data">تعديل البيانات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="add_post">إضافة منشور</string>
+    <string name="bio_label">النبذة</string>
+    <string name="username_label">اسم المستخدم</string>
+    <string name="birthday_label">يوم الميلاد</string>
+    <string name="default_birthday">أبريل 10، 1920 (٥١) سنوات</string>
 </resources>
