@@ -75,12 +75,12 @@ public class MainActivity extends AppCompatActivity {
     // ============================================================
     private ImageView profileImage;
     private TextView profileName, profileBio, profileUsernameText;
-    private MaterialButton btnSetImage, btnEditProfile, btnAddPost;
+    private MaterialButton btnSetImage, btnEditProfile, btnAddPost, btnSettings;
     private FloatingActionButton btnChangeImage;
     private LinearLayout layoutEditName, layoutEditBio, layoutEditUsername;
 
     // ============================================================
-    // ================ متغيرات القائمة الجانبية ================
+    // متغيرات القائمة الجانبية
     // ============================================================
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         btnSetImage = findViewById(R.id.btnSetImage);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnAddPost = findViewById(R.id.btnAddPost);
+        btnSettings = findViewById(R.id.btnSettings);
         btnChangeImage = findViewById(R.id.btnChangeImage);
         layoutEditName = findViewById(R.id.layoutEditName);
         layoutEditBio = findViewById(R.id.layoutEditBio);
@@ -220,24 +221,30 @@ public class MainActivity extends AppCompatActivity {
                 layoutChats.setVisibility(View.GONE);
                 layoutProfile.setVisibility(View.VISIBLE);
                 bottomNavigation.setSelectedItemId(R.id.nav_profile);
-                
+
             } else if (id == R.id.menu_chats) {
                 mainToolbar.setTitle("المحادثات");
                 layoutSettings.setVisibility(View.GONE);
                 layoutProfile.setVisibility(View.GONE);
                 layoutChats.setVisibility(View.VISIBLE);
                 bottomNavigation.setSelectedItemId(R.id.nav_chats);
-                
+
             } else if (id == R.id.menu_settings) {
                 mainToolbar.setTitle("الإعدادات");
                 layoutSettings.setVisibility(View.VISIBLE);
                 layoutProfile.setVisibility(View.GONE);
                 layoutChats.setVisibility(View.GONE);
                 bottomNavigation.setSelectedItemId(R.id.nav_settings);
-                
+
             } else if (id == R.id.menu_search) {
-                startActivity(new Intent(MainActivity.this, SearchActivity.class));
-                
+                // فتح البحث من القائمة الجانبية
+                try {
+                    Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
+                    startActivity(searchIntent);
+                } catch (Exception e) {
+                    Toast.makeText(this, "خطأ في فتح البحث", Toast.LENGTH_SHORT).show();
+                }
+
             } else if (id == R.id.menu_logout) {
                 logoutUser();
             }
@@ -245,53 +252,6 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawers();
             return true;
         });
-    }
-
-    // ============================================================
-    // تسجيل الخروج
-    // ============================================================
-    private void logoutUser() {
-        new AlertDialog.Builder(this)
-                .setTitle("تسجيل الخروج")
-                .setMessage("هل أنت متأكد من تسجيل الخروج؟")
-                .setPositiveButton("نعم", (dialog, which) -> {
-                    mAuth.signOut();
-                    if (mGoogleSignInClient != null) {
-                        mGoogleSignInClient.signOut();
-                    }
-                    
-                    authView.setVisibility(View.VISIBLE);
-                    dashboardView.setVisibility(View.GONE);
-                    
-                    Toast.makeText(this, "تم تسجيل الخروج", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("إلغاء", null)
-                .show();
-    }
-
-    // ============================================================
-    // تحديث رأس القائمة الجانبية
-    // ============================================================
-    private void updateDrawerHeader(String name, String email, String imageUrl) {
-        if (drawerName != null) {
-            drawerName.setText(name != null ? name : "مستخدم");
-        }
-        
-        if (drawerEmail != null) {
-            drawerEmail.setText(email != null ? email : "user@example.com");
-        }
-
-        if (drawerImage != null) {
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Glide.with(this)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.bg_login)
-                        .error(R.drawable.bg_login)
-                        .into(drawerImage);
-            } else {
-                drawerImage.setImageResource(R.drawable.bg_login);
-            }
-        }
     }
 
     // ============================================================
@@ -344,44 +304,100 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // إعداد مستمعي الأحداث
+    // إعداد مستمعي الأحداث - كاملة مع زر البحث
     // ============================================================
     private void setupClickListeners() {
+        // -----------------------------------------------------------------
+        // 1. أزرار شاشة المصادقة (تسجيل الدخول / إنشاء حساب)
+        // -----------------------------------------------------------------
+
+        // زر التبديل بين تسجيل الدخول وإنشاء حساب
         findViewById(R.id.switchModeLayout).setOnClickListener(v -> switchMode());
+
+        // زر الإجراء الرئيسي (تسجيل الدخول / إنشاء حساب)
         mainActionBtn.setOnClickListener(v -> validateAndExecute());
+
+        // زر تسجيل الدخول بجوجل
         btnGoogle.setOnClickListener(v -> signInWithGoogle());
-        btnFacebook.setOnClickListener(v -> 
-            Toast.makeText(this, "تسجيل فيسبوك سيتوفر قريباً", Toast.LENGTH_SHORT).show()
+
+        // زر تسجيل الدخول بفيسبوك (قيد التطوير)
+        btnFacebook.setOnClickListener(v ->
+                Toast.makeText(this, "تسجيل فيسبوك سيتوفر قريباً", Toast.LENGTH_SHORT).show()
         );
 
+        // -----------------------------------------------------------------
+        // 2. أزرار الملف الشخصي (Profile Screen)
+        // -----------------------------------------------------------------
+
+        // زر تعيين صورة (الزر الكبير)
         if (btnSetImage != null) {
             btnSetImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         }
-        
+
+        // زر تغيير الصورة (الزر الصغير على الصورة)
         if (btnChangeImage != null) {
             btnChangeImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         }
-        
+
+        // زر تعديل البيانات
         if (btnEditProfile != null) {
             btnEditProfile.setOnClickListener(v -> showEditProfileDialog());
         }
-        
+
+        // زر الإعدادات
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> {
+                // التبديل إلى شاشة الإعدادات
+                mainToolbar.setTitle("الإعدادات");
+                layoutSettings.setVisibility(View.VISIBLE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutChats.setVisibility(View.GONE);
+                bottomNavigation.setSelectedItemId(R.id.nav_settings);
+            });
+        }
+
+        // زر إضافة منشور
         if (btnAddPost != null) {
-            btnAddPost.setOnClickListener(v -> 
-                Toast.makeText(this, "سيتم إضافة منشور جديد", Toast.LENGTH_SHORT).show()
+            btnAddPost.setOnClickListener(v ->
+                    Toast.makeText(this, "سيتم إضافة منشور جديد", Toast.LENGTH_SHORT).show()
             );
         }
 
+        // -----------------------------------------------------------------
+        // 3. أزرار تعديل النصوص (بالضغط على النص نفسه)
+        // -----------------------------------------------------------------
+
+        // النقر على الاسم للتعديل
         if (layoutEditName != null) {
             layoutEditName.setOnClickListener(v -> showEditNameDialog());
         }
 
+        // النقر على النبذة للتعديل
         if (layoutEditBio != null) {
             layoutEditBio.setOnClickListener(v -> showEditBioDialog());
         }
 
+        // النقر على اسم المستخدم للتعديل
         if (layoutEditUsername != null) {
             layoutEditUsername.setOnClickListener(v -> showEditUsernameDialog());
+        }
+
+        // -----------------------------------------------------------------
+        // 4. 🔍 زر البحث - يفتح شاشة البحث عن المستخدمين (الأهم)
+        // -----------------------------------------------------------------
+        ImageView btnMainSearch = findViewById(R.id.btnMainSearch);
+        if (btnMainSearch != null) {
+            btnMainSearch.setOnClickListener(v -> {
+                try {
+                    Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
+                    startActivity(searchIntent);
+                    // Toast اختياري - ممكن تشيله إذا ما تريده
+                    // Toast.makeText(this, "جاري فتح البحث...", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, "خطأ في فتح البحث: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -413,8 +429,8 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 saveUserData(
-                    mAuth.getCurrentUser().getDisplayName(),
-                    mAuth.getCurrentUser().getEmail()
+                        mAuth.getCurrentUser().getDisplayName(),
+                        mAuth.getCurrentUser().getEmail()
                 );
             } else {
                 resetUI("فشل المصادقة");
@@ -485,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // حفظ بيانات المستخدم
+    // حفظ بيانات المستخدم في قاعدة البيانات
     // ============================================================
     private void saveUserData(String username, String email) {
         String uid = mAuth.getCurrentUser().getUid();
@@ -516,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // إعادة تعيين الواجهة
+    // إعادة تعيين الواجهة مع عرض رسالة خطأ
     // ============================================================
     private void resetUI(String errorMsg) {
         setLoadingState(false);
@@ -540,7 +556,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // جلب بيانات المستخدم
+    // جلب بيانات المستخدم من Firebase
     // ============================================================
     private void loadUserProfile() {
         String uid = mAuth.getCurrentUser().getUid();
@@ -566,6 +582,7 @@ public class MainActivity extends AppCompatActivity {
                                 .into(profileImage);
                     }
 
+                    // تحديث القائمة الجانبية
                     updateDrawerHeader(name, email, image);
                 }
             }
@@ -578,7 +595,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // رفع الصورة
+    // تحديث رأس القائمة الجانبية
+    // ============================================================
+    private void updateDrawerHeader(String name, String email, String imageUrl) {
+        if (drawerName != null) {
+            drawerName.setText(name != null ? name : "مستخدم");
+        }
+
+        if (drawerEmail != null) {
+            drawerEmail.setText(email != null ? email : "user@example.com");
+        }
+
+        if (drawerImage != null) {
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(this)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.bg_login)
+                        .error(R.drawable.bg_login)
+                        .into(drawerImage);
+            } else {
+                drawerImage.setImageResource(R.drawable.bg_login);
+            }
+        }
+    }
+
+    // ============================================================
+    // رفع الصورة إلى Firebase Storage
     // ============================================================
     private void uploadProfileImage(Uri imageUri) {
         Toast.makeText(this, "جاري رفع الصورة...", Toast.LENGTH_SHORT).show();
@@ -586,13 +628,13 @@ public class MainActivity extends AppCompatActivity {
         StorageReference fileRef = mStorage.child("Profile_Images").child(uid + ".jpg");
 
         fileRef.putFile(imageUri).addOnSuccessListener(taskSnapshot ->
-            fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                String downloadUrl = uri.toString();
-                mDb.child("Users").child(uid).child("profileImage").setValue(downloadUrl);
-                Toast.makeText(this, "تم تغيير الصورة بنجاح!", Toast.LENGTH_SHORT).show();
-            })
-        ).addOnFailureListener(e -> 
-            Toast.makeText(this, "فشل رفع الصورة", Toast.LENGTH_SHORT).show()
+                fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String downloadUrl = uri.toString();
+                    mDb.child("Users").child(uid).child("profileImage").setValue(downloadUrl);
+                    Toast.makeText(this, "تم تغيير الصورة بنجاح!", Toast.LENGTH_SHORT).show();
+                })
+        ).addOnFailureListener(e ->
+                Toast.makeText(this, "فشل رفع الصورة", Toast.LENGTH_SHORT).show()
         );
     }
 
@@ -659,7 +701,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // نافذة تعديل اسم المستخدم
+    // نافذة تعديل اسم المستخدم (@username)
     // ============================================================
     private void showEditUsernameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -744,6 +786,28 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setNegativeButton("إلغاء", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    // ============================================================
+    // تسجيل الخروج
+    // ============================================================
+    private void logoutUser() {
+        new AlertDialog.Builder(this)
+                .setTitle("تسجيل الخروج")
+                .setMessage("هل أنت متأكد من تسجيل الخروج؟")
+                .setPositiveButton("نعم", (dialog, which) -> {
+                    mAuth.signOut();
+                    if (mGoogleSignInClient != null) {
+                        mGoogleSignInClient.signOut();
+                    }
+
+                    authView.setVisibility(View.VISIBLE);
+                    dashboardView.setVisibility(View.GONE);
+
+                    Toast.makeText(this, "تم تسجيل الخروج", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("إلغاء", null)
+                .show();
     }
 
     // ============================================================
