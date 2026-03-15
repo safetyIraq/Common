@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_new_group"
+            android:icon="@android:drawable/ic_menu_add"
+            android:title="مجموعة جديدة" />
+        <item
+            android:id="@+id/nav_contacts"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="جهات الاتصال" />
+        <item
+            android:id="@+id/nav_calls"
+            android:icon="@android:drawable/ic_menu_call"
+            android:title="المكالمات" />
+        <item
+            android:id="@+id/nav_saved"
+            android:icon="@android:drawable/ic_menu_save"
+            android:title="الرسائل المحفوظة" />
+        <item
+            android:id="@+id/nav_settings_drawer"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="الإعدادات" />
+    </group>
+    
+    <item android:title="الخدمات">
+        <menu>
+            <item
+                android:id="@+id/nav_invite"
+                android:icon="@android:drawable/ic_menu_share"
+                android:title="دعوة أصدقاء" />
+            <item
+                android:id="@+id/nav_features"
+                android:icon="@android:drawable/ic_menu_help"
+                android:title="مميزات التطبيق" />
+        </menu>
+    </item>
+</menu>
