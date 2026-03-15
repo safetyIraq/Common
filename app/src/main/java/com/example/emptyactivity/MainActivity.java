@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.ui.AppBarConfiguration;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout layoutEditName, layoutEditBio, layoutEditUsername;
 
     // ============================================================
-    // ================ متغيرات القائمة الجانبية الجديدة ================
+    // ================ متغيرات القائمة الجانبية ================
     // ============================================================
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         setupGoogleSignIn();
         setupClickListeners();
         setupBottomNavigation();
-        setupNavigationDrawer(); // 👈 إضافة إعداد القائمة الجانبية
+        setupNavigationDrawer();
         checkCurrentUser();
     }
 
@@ -190,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         layoutEditBio = findViewById(R.id.layoutEditBio);
         layoutEditUsername = findViewById(R.id.layoutEditUsername);
 
-        // ================ عناصر القائمة الجانبية الجديدة ================
+        // عناصر القائمة الجانبية
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.navigationView);
         btnOpenDrawer = findViewById(R.id.btnOpenDrawer);
@@ -203,22 +202,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // إعداد القائمة الجانبية (Navigation Drawer)
+    // إعداد القائمة الجانبية
     // ============================================================
     private void setupNavigationDrawer() {
-        // فتح القائمة عند الضغط على زر القائمة
         if (btnOpenDrawer != null) {
             btnOpenDrawer.setOnClickListener(v -> {
                 drawerLayout.openDrawer(GravityCompat.START);
             });
         }
 
-        // التعامل مع ضغطات أزرار القائمة الجانبية
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.menu_profile) {
-                // الانتقال إلى الملف الشخصي
                 mainToolbar.setTitle("");
                 layoutSettings.setVisibility(View.GONE);
                 layoutChats.setVisibility(View.GONE);
@@ -226,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigation.setSelectedItemId(R.id.nav_profile);
                 
             } else if (id == R.id.menu_chats) {
-                // الانتقال إلى المحادثات
                 mainToolbar.setTitle("المحادثات");
                 layoutSettings.setVisibility(View.GONE);
                 layoutProfile.setVisibility(View.GONE);
@@ -234,7 +229,6 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigation.setSelectedItemId(R.id.nav_chats);
                 
             } else if (id == R.id.menu_settings) {
-                // الانتقال إلى الإعدادات
                 mainToolbar.setTitle("الإعدادات");
                 layoutSettings.setVisibility(View.VISIBLE);
                 layoutProfile.setVisibility(View.GONE);
@@ -242,15 +236,12 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigation.setSelectedItemId(R.id.nav_settings);
                 
             } else if (id == R.id.menu_search) {
-                // فتح شاشة البحث
                 startActivity(new Intent(MainActivity.this, SearchActivity.class));
                 
             } else if (id == R.id.menu_logout) {
-                // تسجيل الخروج
                 logoutUser();
             }
 
-            // غلق القائمة بعد الاختيار
             drawerLayout.closeDrawers();
             return true;
         });
@@ -265,9 +256,10 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("هل أنت متأكد من تسجيل الخروج؟")
                 .setPositiveButton("نعم", (dialog, which) -> {
                     mAuth.signOut();
-                    mGoogleSignInClient.signOut();
+                    if (mGoogleSignInClient != null) {
+                        mGoogleSignInClient.signOut();
+                    }
                     
-                    // العودة لشاشة تسجيل الدخول
                     authView.setVisibility(View.VISIBLE);
                     dashboardView.setVisibility(View.GONE);
                     
@@ -278,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // تحديث معلومات المستخدم في القائمة الجانبية
+    // تحديث رأس القائمة الجانبية
     // ============================================================
     private void updateDrawerHeader(String name, String email, String imageUrl) {
         if (drawerName != null) {
@@ -309,12 +301,10 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            // إخفاء جميع الشاشات أولاً
             layoutSettings.setVisibility(View.GONE);
             layoutProfile.setVisibility(View.GONE);
             layoutChats.setVisibility(View.GONE);
 
-            // إظهار الشاشة المحددة
             if (id == R.id.nav_chats) {
                 mainToolbar.setTitle("المحادثات");
                 layoutChats.setVisibility(View.VISIBLE);
@@ -357,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
     // إعداد مستمعي الأحداث
     // ============================================================
     private void setupClickListeners() {
-        // أزرار شاشة المصادقة
         findViewById(R.id.switchModeLayout).setOnClickListener(v -> switchMode());
         mainActionBtn.setOnClickListener(v -> validateAndExecute());
         btnGoogle.setOnClickListener(v -> signInWithGoogle());
@@ -365,7 +354,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "تسجيل فيسبوك سيتوفر قريباً", Toast.LENGTH_SHORT).show()
         );
 
-        // أزرار الملف الشخصي
         if (btnSetImage != null) {
             btnSetImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         }
@@ -384,17 +372,14 @@ public class MainActivity extends AppCompatActivity {
             );
         }
 
-        // النقر على الاسم للتعديل
         if (layoutEditName != null) {
             layoutEditName.setOnClickListener(v -> showEditNameDialog());
         }
 
-        // النقر على النبذة للتعديل
         if (layoutEditBio != null) {
             layoutEditBio.setOnClickListener(v -> showEditBioDialog());
         }
 
-        // النقر على اسم المستخدم للتعديل
         if (layoutEditUsername != null) {
             layoutEditUsername.setOnClickListener(v -> showEditUsernameDialog());
         }
@@ -500,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // حفظ بيانات المستخدم في قاعدة البيانات
+    // حفظ بيانات المستخدم
     // ============================================================
     private void saveUserData(String username, String email) {
         String uid = mAuth.getCurrentUser().getUid();
@@ -531,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // إعادة تعيين الواجهة مع عرض رسالة خطأ
+    // إعادة تعيين الواجهة
     // ============================================================
     private void resetUI(String errorMsg) {
         setLoadingState(false);
@@ -555,7 +540,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // جلب بيانات المستخدم من Firebase
+    // جلب بيانات المستخدم
     // ============================================================
     private void loadUserProfile() {
         String uid = mAuth.getCurrentUser().getUid();
@@ -581,7 +566,6 @@ public class MainActivity extends AppCompatActivity {
                                 .into(profileImage);
                     }
 
-                    // تحديث القائمة الجانبية
                     updateDrawerHeader(name, email, image);
                 }
             }
@@ -594,7 +578,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // رفع الصورة إلى Firebase Storage
+    // رفع الصورة
     // ============================================================
     private void uploadProfileImage(Uri imageUri) {
         Toast.makeText(this, "جاري رفع الصورة...", Toast.LENGTH_SHORT).show();
@@ -675,7 +659,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // نافذة تعديل اسم المستخدم (@username)
+    // نافذة تعديل اسم المستخدم
     // ============================================================
     private void showEditUsernameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -763,14 +747,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // عند الضغط على زر الرجوع
+    // زر الرجوع
     // ============================================================
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
-}
+    }
