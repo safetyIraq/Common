@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    ================================================================
+    📱 عنصر المحادثة - تصميم احترافي خارق
+    📌 يستخدم لعرض كل مستخدم في قائمة المحادثات
+    🎨 تصميم متوافق مع الـ RTL
+    ================================================================
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="15dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/abc_popup_background_mtrl_mult"
+    android:backgroundTint="@color/bg_dark_card"
+    android:gravity="center_vertical"
+    android:layoutDirection="rtl"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:elevation="2dp"
+    android:stateListAnimator="@null"
+    tools:ignore="RtlHardcoded">
+
+    <!-- 
+        ============================================================
+        📸 صورة المستخدم - دائرية مع إطار
+        ============================================================
+    -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/itemProfileImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/bg_login"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/profile_image_description"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/blue_primary"
+        tools:src="@tools:sample/avatars" />
+
+    <!-- 
+        ============================================================
+        📝 معلومات المستخدم - تمتد لتملأ المساحة
+        ============================================================
+    -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp">
+
+        <!-- اسم المستخدم + حالة الاتصال -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp">
+
+            <!-- اسم المستخدم -->
+            <TextView
+                android:id="@+id/itemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_username"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="HUSSEIN" />
+
+            <!-- حالة الاتصال - نقطة خضراء -->
+            <TextView
+                android:id="@+id/itemOnlineStatus"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_toEndOf="@id/itemName"
+                android:layout_marginStart="8dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/circle_online_status"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </RelativeLayout>
+
+        <!-- النبذة التعريفية + الوقت -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- النبذة -->
+            <TextView
+                android:id="@+id/itemBio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_bio"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/itemTime"
+                tools:text="مرحباً بالعالم 👋" />
+
+            <!-- وقت آخر رسالة -->
+            <TextView
+                android:id="@+id/itemTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_time"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                tools:text="10:30"
+                tools:visibility="visible" />
+        </RelativeLayout>
+
+        <!-- مؤشر الرسائل غير المقروءة -->
+        <TextView
+            android:id="@+id/itemUnreadCount"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:background="@drawable/badge_unread"
+            android:visibility="gone"
+            tools:text="3"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <!-- 
+        ============================================================
+        🎯 زر الإجراء - فتح المحادثة
+        ============================================================
+    -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnChatWithUser"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        app:cardCornerRadius="22.5dp"
+        app:cardBackgroundColor="@color/icon_blue"
+        app:cardElevation="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:stateListAnimator="@null"
+        tools:ignore="UnusedAttribute">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_dialog_email"
+            app:tint="@color/white"
+            android:contentDescription="@string/chat_button_description" />
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
