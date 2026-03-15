@@ -238,12 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (id == R.id.menu_search) {
                 // فتح البحث من القائمة الجانبية
-                try {
-                    Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
-                    startActivity(searchIntent);
-                } catch (Exception e) {
-                    Toast.makeText(this, "خطأ في فتح البحث", Toast.LENGTH_SHORT).show();
-                }
+                openSearchActivity();
 
             } else if (id == R.id.menu_logout) {
                 logoutUser();
@@ -304,50 +299,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // إعداد مستمعي الأحداث - كاملة مع زر البحث
+    // ================ دالة فتح البحث (الأهم) ================
+    // ============================================================
+    private void openSearchActivity() {
+        try {
+            Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
+            startActivity(searchIntent);
+            // Toast.makeText(this, "جاري فتح البحث...", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ في فتح البحث: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    // ============================================================
+    // إعداد مستمعي الأحداث
     // ============================================================
     private void setupClickListeners() {
         // -----------------------------------------------------------------
-        // 1. أزرار شاشة المصادقة (تسجيل الدخول / إنشاء حساب)
+        // 1. أزرار شاشة المصادقة
         // -----------------------------------------------------------------
-
-        // زر التبديل بين تسجيل الدخول وإنشاء حساب
         findViewById(R.id.switchModeLayout).setOnClickListener(v -> switchMode());
-
-        // زر الإجراء الرئيسي (تسجيل الدخول / إنشاء حساب)
         mainActionBtn.setOnClickListener(v -> validateAndExecute());
-
-        // زر تسجيل الدخول بجوجل
         btnGoogle.setOnClickListener(v -> signInWithGoogle());
-
-        // زر تسجيل الدخول بفيسبوك (قيد التطوير)
         btnFacebook.setOnClickListener(v ->
                 Toast.makeText(this, "تسجيل فيسبوك سيتوفر قريباً", Toast.LENGTH_SHORT).show()
         );
 
         // -----------------------------------------------------------------
-        // 2. أزرار الملف الشخصي (Profile Screen)
+        // 2. أزرار الملف الشخصي
         // -----------------------------------------------------------------
-
-        // زر تعيين صورة (الزر الكبير)
         if (btnSetImage != null) {
             btnSetImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         }
-
-        // زر تغيير الصورة (الزر الصغير على الصورة)
+        
         if (btnChangeImage != null) {
             btnChangeImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         }
-
-        // زر تعديل البيانات
+        
         if (btnEditProfile != null) {
             btnEditProfile.setOnClickListener(v -> showEditProfileDialog());
         }
-
-        // زر الإعدادات
+        
         if (btnSettings != null) {
             btnSettings.setOnClickListener(v -> {
-                // التبديل إلى شاشة الإعدادات
                 mainToolbar.setTitle("الإعدادات");
                 layoutSettings.setVisibility(View.VISIBLE);
                 layoutProfile.setVisibility(View.GONE);
@@ -355,8 +350,7 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigation.setSelectedItemId(R.id.nav_settings);
             });
         }
-
-        // زر إضافة منشور
+        
         if (btnAddPost != null) {
             btnAddPost.setOnClickListener(v ->
                     Toast.makeText(this, "سيتم إضافة منشور جديد", Toast.LENGTH_SHORT).show()
@@ -364,40 +358,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // -----------------------------------------------------------------
-        // 3. أزرار تعديل النصوص (بالضغط على النص نفسه)
+        // 3. أزرار تعديل النصوص
         // -----------------------------------------------------------------
-
-        // النقر على الاسم للتعديل
         if (layoutEditName != null) {
             layoutEditName.setOnClickListener(v -> showEditNameDialog());
         }
-
-        // النقر على النبذة للتعديل
         if (layoutEditBio != null) {
             layoutEditBio.setOnClickListener(v -> showEditBioDialog());
         }
-
-        // النقر على اسم المستخدم للتعديل
         if (layoutEditUsername != null) {
             layoutEditUsername.setOnClickListener(v -> showEditUsernameDialog());
         }
 
         // -----------------------------------------------------------------
-        // 4. 🔍 زر البحث - يفتح شاشة البحث عن المستخدمين (الأهم)
+        // 4. 🔍 زر البحث في الـ Toolbar (الأهم)
         // -----------------------------------------------------------------
         ImageView btnMainSearch = findViewById(R.id.btnMainSearch);
         if (btnMainSearch != null) {
-            btnMainSearch.setOnClickListener(v -> {
-                try {
-                    Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
-                    startActivity(searchIntent);
-                    // Toast اختياري - ممكن تشيله إذا ما تريده
-                    // Toast.makeText(this, "جاري فتح البحث...", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(this, "خطأ في فتح البحث: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-            });
+            btnMainSearch.setOnClickListener(v -> openSearchActivity());
         }
     }
 
@@ -582,7 +560,6 @@ public class MainActivity extends AppCompatActivity {
                                 .into(profileImage);
                     }
 
-                    // تحديث القائمة الجانبية
                     updateDrawerHeader(name, email, image);
                 }
             }
@@ -701,7 +678,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // نافذة تعديل اسم المستخدم (@username)
+    // نافذة تعديل اسم المستخدم
     // ============================================================
     private void showEditUsernameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -821,4 +798,4 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-    }
+                                    }
