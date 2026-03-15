@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    ================================================================
+    📋 قائمة التنقل الجانبية (Navigation Drawer Menu)
+    ================================================================
+    تحتوي على خيارات:
+    - الملف الشخصي
+    - المحادثات
+    - الإعدادات
+    - بحث
+    - تسجيل الخروج
+    ================================================================
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- الملف الشخصي -->
+    <item
+        android:id="@+id/menu_profile"
+        android:title="الملف الشخصي"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:checkable="true" />
+    
+    <!-- المحادثات -->
+    <item
+        android:id="@+id/menu_chats"
+        android:title="المحادثات"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:checkable="true" />
+    
+    <!-- الإعدادات -->
+    <item
+        android:id="@+id/menu_settings"
+        android:title="الإعدادات"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:checkable="true" />
+    
+    <!-- فاصل -->
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/menu_search"
+                android:title="بحث"
+                android:icon="@android:drawable/ic_menu_search" />
+        </menu>
+    </item>
+    
+    <!-- فاصل -->
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/menu_logout"
+                android:title="تسجيل الخروج"
+                android:icon="@android:drawable/ic_lock_power_off" />
+        </menu>
+    </item>
+</menu>
