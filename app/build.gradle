@@ -5,21 +5,21 @@ plugins {
 
 android {
     namespace 'com.example.emptyactivity'
-    compileSdk 34 // لضمان التوافقية
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.emptyactivity"
-        minSdk 23 // ضروري للفايربيس
+        minSdk 23
         targetSdk 34
         versionCode 6
         versionName "6.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
 
-    // 🔥 بلوك التوقيع الدائمي لربط مفتاح hussain.jks (من Termux)
     signingConfigs {
         release {
-            storeFile file("hussain.jks") // تأكد الملف بداخل مجلد app
+            storeFile file("hussain.jks")
             storePassword "078536535"
             keyAlias "connectify"
             keyPassword "078536535"
@@ -28,7 +28,6 @@ android {
 
     buildTypes {
         debug {
-            // نجبر نسخة التجربة تستخدم المفتاح الدائم حتى يشتغل جوجل
             signingConfig signingConfigs.release 
         }
         release {
@@ -43,7 +42,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // 🔥 حل مشكلة تكرار كلاسات الكوتلن نهائياً
     configurations.all {
         resolutionStrategy {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
@@ -53,21 +51,29 @@ android {
 }
 
 dependencies {
-    // مكتبات الواجهة الأساسية Material 3
+    // ============================================================
+    // مكتبات الواجهة والتصميم الحديثة
+    // ============================================================
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
-    implementation 'androidx.navigation:navigation-fragment:2.7.7'
-    implementation 'androidx.navigation:navigation-ui:2.7.7'
 
-    // منصة فايربيس (إدارة الحسابات وقاعدة البيانات) BOM
+    // ============================================================
+    // منصة فايربيس (إدارة الحسابات، قاعدة البيانات، ومخزن الصور)
+    // ============================================================
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-    
-    // مكتبة جوجل الرسمية لتسجيل الدخول
+    implementation 'com.google.firebase:firebase-storage' // 👈 مخزن الصور
+
+    // ============================================================
+    // خدمات جوجل لتسجيل الدخول
+    // ============================================================
     implementation 'com.google.android.gms:play-services-auth:21.0.0'
 
-    // مكتبة Glider لتحميل الصور (للآفاتار والبحث)
+    // ============================================================
+    // مكتبات تحميل وعرض الصور باحترافية
+    // ============================================================
     implementation 'com.github.bumptech.glide:glide:4.16.0'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }
