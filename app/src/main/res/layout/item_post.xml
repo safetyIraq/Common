@@ -11,7 +11,7 @@
     android:layoutDirection="rtl">
 
     <!-- ================================================================ -->
-    <!-- رأس المنشور - معلومات الناشر                                    -->
+    <!-- رأس المنشور -->
     <!-- ================================================================ -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
 
         </LinearLayout>
 
-        <!-- زر الخيارات (ثلاث نقاط) -->
+        <!-- زر الخيارات -->
         <ImageView
             android:id="@+id/btnPostOptions"
             android:layout_width="24dp"
@@ -69,7 +69,7 @@
     </LinearLayout>
 
     <!-- ================================================================ -->
-    <!-- محتوى المنشور                                                   -->
+    <!-- محتوى المنشور -->
     <!-- ================================================================ -->
     <TextView
         android:id="@+id/postContent"
@@ -81,7 +81,7 @@
         android:gravity="right"
         android:layout_marginBottom="15dp" />
 
-    <!-- صورة المنشور (إذا وجدت) -->
+    <!-- صورة المنشور -->
     <ImageView
         android:id="@+id/postImage"
         android:layout_width="match_parent"
@@ -91,19 +91,18 @@
         android:layout_marginBottom="15dp" />
 
     <!-- ================================================================ -->
-    <!-- إحصائيات المنشور (إعجابات - تعليقات)                            -->
+    <!-- إحصائيات المنشور -->
     <!-- ================================================================ -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="space_between"
         android:layout_marginBottom="10dp">
 
         <TextView
             android:id="@+id/postLikesCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:text="0 إعجاب"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
@@ -112,11 +111,12 @@
             android:id="@+id/postCommentsCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:text="0 تعليق"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <!-- خط فاصل -->
     <View
@@ -126,14 +126,13 @@
         android:layout_marginBottom="10dp" />
 
     <!-- ================================================================ -->
-    <!-- أزرار التفاعل                                                   -->
+    <!-- أزرار التفاعل -->
     <!-- ================================================================ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:weightSum="3">
+        android:gravity="center">
 
         <!-- زر الإعجاب -->
         <LinearLayout
