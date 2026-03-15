@@ -1,357 +1,109 @@
-package com.example.emptyactivity;
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:layoutDirection="rtl">
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Patterns;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+    <RelativeLayout android:id="@+id/authView" android:layout_width="match_parent" android:layout_height="match_parent">
+        <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" android:src="@drawable/bg_login" app:tint="#4D000000" app:tintMode="src_over"/> 
+        <ProgressBar android:id="@+id/loadingView" android:layout_width="60dp" android:layout_height="60dp" android:layout_centerInParent="true" android:elevation="10dp" android:indeterminateTint="@color/white" android:visibility="gone" />
+        <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="30dp" android:gravity="center">
+                <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="تسجيل الدخول" android:textSize="36sp" android:textStyle="bold" android:textColor="@color/white" android:layout_marginTop="50dp" android:layout_marginBottom="30dp" android:shadowColor="#000000" android:shadowDx="3" android:shadowDy="3" android:shadowRadius="5"/>
+                
+                <com.google.android.material.textfield.TextInputLayout android:id="@+id/layoutUser" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="15dp" app:boxBackgroundColor="@color/glass_dark_box" app:boxStrokeColor="@color/glass_stroke" app:boxCornerRadiusTopStart="20dp" app:boxCornerRadiusTopEnd="20dp" app:boxCornerRadiusBottomStart="20dp" app:boxCornerRadiusBottomEnd="20dp" app:startIconDrawable="@android:drawable/ic_menu_myplaces" app:startIconTint="@color/white" app:hintTextColor="@color/white" android:visibility="gone">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/regUser" android:layout_width="match_parent" android:layout_height="60dp" android:hint="اسم المستخدم" android:textColorHint="@color/text_hint" android:textSize="16sp" android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+                <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="15dp" app:boxBackgroundColor="@color/glass_dark_box" app:boxStrokeColor="@color/glass_stroke" app:boxCornerRadiusTopStart="20dp" app:boxCornerRadiusTopEnd="20dp" app:boxCornerRadiusBottomStart="20dp" app:boxCornerRadiusBottomEnd="20dp" app:startIconDrawable="@android:drawable/ic_dialog_email" app:startIconTint="@color/white" app:hintTextColor="@color/white">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/regEmail" android:layout_width="match_parent" android:layout_height="60dp" android:hint="البريد الإلكتروني" android:inputType="textEmailAddress" android:textColorHint="@color/text_hint" android:textSize="16sp" android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
+                <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:boxBackgroundColor="@color/glass_dark_box" app:boxStrokeColor="@color/glass_stroke" app:boxCornerRadiusTopStart="20dp" app:boxCornerRadiusTopEnd="20dp" app:boxCornerRadiusBottomStart="20dp" app:boxCornerRadiusBottomEnd="20dp" app:startIconDrawable="@android:drawable/ic_lock_idle_lock" app:startIconTint="@color/white" app:passwordToggleEnabled="true" app:passwordToggleTint="@color/white" app:hintTextColor="@color/white">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/regPass" android:layout_width="match_parent" android:layout_height="60dp" android:hint="كلمة المرور" android:inputType="textPassword" android:textColorHint="@color/text_hint" android:textSize="16sp" android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-import java.util.HashMap;
-import java.util.regex.Pattern;
+                <com.google.android.material.button.MaterialButton android:id="@+id/mainActionBtn" android:layout_width="match_parent" android:layout_height="65dp" android:text="تسجيل الدخول" android:textSize="20sp" android:textStyle="bold" android:textColor="@color/white" android:backgroundTint="@color/blue_primary" app:cornerRadius="20dp" android:layout_marginTop="10dp" android:layout_marginBottom="25dp"/>
 
-public class MainActivity extends AppCompatActivity {
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="أو المتابعة باستخدام" android:textColor="@color/white" android:textStyle="bold" android:layout_marginBottom="15dp"/>
 
-    // Views
-    private TextInputEditText regEmail, regPass, regUser;
-    private TextInputLayout layoutUser;
-    private MaterialButton mainActionBtn, btnGoogle, btnFacebook;
-    private TextView tvTitle, tvSwitchPrefix, tvSwitchAction, tabContentText, profileName;
-    private ProgressBar loadingView;
-    private View authView, dashboardView, layoutSettings, layoutProfile, layoutChats;
-    private BottomNavigationView bottomNavigation;
-    private Toolbar mainToolbar;
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="25dp">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnGoogle" android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:text="Google" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/white" android:backgroundTint="@color/colorGoogle" app:cornerRadius="15dp" android:layout_marginEnd="10dp"/>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnFacebook" android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:text="Facebook" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/white" android:backgroundTint="@color/colorFacebook" app:cornerRadius="15dp"/>
+                </LinearLayout>
 
-    // Firebase
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDb;
+                <LinearLayout android:id="@+id/switchModeLayout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <TextView android:id="@+id/tvSwitchPrefix" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ليس لديك حساب؟ " android:textColor="@color/white" android:textSize="16sp"/>
+                    <TextView android:id="@+id/tvSwitchAction" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إنشاء حساب جديد" android:textColor="@color/blue_primary" android:textStyle="bold" android:textSize="16sp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
 
-    // State
-    private boolean isLoginMode = true;
-    private GoogleSignInClient mGoogleSignInClient;
+    <RelativeLayout android:id="@+id/dashboardView" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" android:background="@color/bg_dark_main">
+        <androidx.appcompat.widget.Toolbar android:id="@+id/mainToolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:background="@color/bg_dark_main" app:titleTextColor="@color/white" android:elevation="4dp"/>
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" android:layout_below="@id/mainToolbar" android:layout_above="@id/bottomNavigation">
+            
+            <ScrollView android:id="@+id/layoutSettings" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" android:padding="15dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/abc_popup_background_mtrl_mult" android:backgroundTint="@color/bg_dark_card" android:padding="15dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="25dp">
+                            <androidx.cardview.widget.CardView android:layout_width="40dp" android:layout_height="40dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="@color/icon_blue" android:layout_marginEnd="15dp">
+                                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="@color/white" android:layout_gravity="center"/>
+                            </androidx.cardview.widget.CardView>
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الحساب" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الرقم، اسم المستخدم، النبذة" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="25dp">
+                            <androidx.cardview.widget.CardView android:layout_width="40dp" android:layout_height="40dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="@color/icon_orange" android:layout_marginEnd="15dp">
+                                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_email" app:tint="@color/white" android:layout_gravity="center"/>
+                            </androidx.cardview.widget.CardView>
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إعدادات المحادثات" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="خلفية الشاشة، الوضع الليلي" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <androidx.cardview.widget.CardView android:layout_width="40dp" android:layout_height="40dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="@color/icon_green" android:layout_marginEnd="15dp">
+                                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="@color/white" android:layout_gravity="center"/>
+                            </androidx.cardview.widget.CardView>
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الخصوصية والأمان" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="آخر ظهور، الأجهزة، مفاتيح المرور" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
 
-    // Constants
-    private static final Pattern PASSWORD_PATTERN = 
-        Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$");
-    private static final Pattern USERNAME_PATTERN = 
-        Pattern.compile("^[a-zA-Z0-9._-]{3,20}$");
+            <ScrollView android:id="@+id/layoutProfile" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:paddingTop="20dp">
+                    <androidx.cardview.widget.CardView android:layout_width="100dp" android:layout_height="100dp" app:cardCornerRadius="50dp" app:cardBackgroundColor="@color/bg_dark_card">
+                        <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_login" android:scaleType="centerCrop"/>
+                    </androidx.cardview.widget.CardView>
+                    <TextView android:id="@+id/profileName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HUSSEIN •" android:textColor="@color/white" android:textSize="26sp" android:textStyle="bold" android:layout_marginTop="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="متصل" android:textColor="@color/icon_blue" android:textSize="16sp" android:layout_marginBottom="20dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="15dp" android:layout_marginBottom="20dp">
+                        <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="55dp" android:layout_weight="1" android:text="الإعدادات" android:textColor="@color/white" android:backgroundTint="@color/bg_dark_card" app:cornerRadius="15dp" android:layout_marginEnd="10dp"/>
+                        <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="55dp" android:layout_weight="1" android:text="تعديل البيانات" android:textColor="@color/white" android:backgroundTint="@color/bg_dark_card" app:cornerRadius="15dp" android:layout_marginEnd="10dp"/>
+                        <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="55dp" android:layout_weight="1" android:text="تعيين صورة" android:textColor="@color/white" android:backgroundTint="@color/bg_dark_card" app:cornerRadius="15dp"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@color/bg_dark_card" android:padding="20dp" android:layout_marginHorizontal="15dp" android:layout_marginBottom="20dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="#لست صداعاً انا فكرة اكبر من رأسك." android:textColor="@color/white" android:textSize="18sp" android:gravity="right" android:layout_marginBottom="5dp"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="النبذة" android:textColor="@color/text_secondary" android:textSize="14sp" android:gravity="right" android:layout_marginBottom="15dp"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@iomk0" android:textColor="@color/white" android:textSize="18sp" android:gravity="right" android:layout_marginBottom="5dp"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="اسم المستخدم" android:textColor="@color/text_secondary" android:textSize="14sp" android:gravity="right"/>
+                    </LinearLayout>
+                    <com.google.android.material.button.MaterialButton android:layout_width="wrap_content" android:layout_height="60dp" android:text="إضافة منشور" android:textColor="@color/white" android:backgroundTint="@color/icon_blue" app:cornerRadius="30dp" app:icon="@android:drawable/ic_menu_camera" app:iconTint="@color/white" android:layout_marginBottom="30dp"/>
+                </LinearLayout>
+            </ScrollView>
 
-    // Activity Result Launcher
-    private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
-                    try {
-                        GoogleSignInAccount account = task.getResult(ApiException.class);
-                        if (account != null) firebaseAuthWithGoogle(account.getIdToken());
-                    } catch (ApiException e) {
-                        handleAuthError("فشل تسجيل الدخول بجوجل", e);
-                    }
-                } else {
-                    resetUI("تم إلغاء العملية");
-                }
-            }
-    );
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initViews();
-        setupFirebase();
-        setupGoogleSignIn();
-        setupClickListeners();
-        setupBottomNavigation();
-        checkCurrentUser();
-    }
-
-    private void initViews() {
-        // Auth Views
-        regEmail = findViewById(R.id.regEmail);
-        regPass = findViewById(R.id.regPass);
-        regUser = findViewById(R.id.regUser);
-        layoutUser = findViewById(R.id.layoutUser);
-        mainActionBtn = findViewById(R.id.mainActionBtn);
-        tvTitle = findViewById(R.id.tvTitle);
-        tvSwitchPrefix = findViewById(R.id.tvSwitchPrefix);
-        tvSwitchAction = findViewById(R.id.tvSwitchAction);
-        loadingView = findViewById(R.id.loadingView);
-        authView = findViewById(R.id.authView);
-        btnGoogle = findViewById(R.id.btnGoogle);
-        btnFacebook = findViewById(R.id.btnFacebook);
-
-        // Dashboard Views
-        dashboardView = findViewById(R.id.dashboardView);
-        bottomNavigation = findViewById(R.id.bottomNavigation);
-        mainToolbar = findViewById(R.id.mainToolbar);
-        tabContentText = findViewById(R.id.tabContentText);
-        layoutSettings = findViewById(R.id.layoutSettings);
-        layoutProfile = findViewById(R.id.layoutProfile);
-        layoutChats = findViewById(R.id.layoutChats);
-        profileName = findViewById(R.id.profileName);
-    }
-
-    private void setupFirebase() {
-        mAuth = FirebaseAuth.getInstance();
-        mDb = FirebaseDatabase.getInstance().getReference();
-    }
-
-    private void setupGoogleSignIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .requestProfile()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-    }
-
-    private void setupClickListeners() {
-        findViewById(R.id.switchModeLayout).setOnClickListener(v -> switchMode());
-        mainActionBtn.setOnClickListener(v -> validateAndExecute());
-        btnGoogle.setOnClickListener(v -> signInWithGoogle());
-        btnFacebook.setOnClickListener(v -> Toast.makeText(this, "قريباً!", Toast.LENGTH_SHORT).show());
-    }
-
-    private void setupBottomNavigation() {
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-
-            // Hide all layouts
-            layoutSettings.setVisibility(View.GONE);
-            layoutProfile.setVisibility(View.GONE);
-            layoutChats.setVisibility(View.GONE);
-
-            if (id == R.id.nav_chats) {
-                mainToolbar.setTitle("المحادثات");
-                layoutChats.setVisibility(View.VISIBLE);
-                tabContentText.setText("قائمة المحادثات ستظهر هنا");
-            } else if (id == R.id.nav_contacts) {
-                mainToolbar.setTitle("جهات الاتصال");
-                layoutChats.setVisibility(View.VISIBLE);
-                tabContentText.setText("قائمة جهات الاتصال ستظهر هنا");
-            } else if (id == R.id.nav_settings) {
-                mainToolbar.setTitle("الإعدادات");
-                layoutSettings.setVisibility(View.VISIBLE);
-            } else if (id == R.id.nav_profile) {
-                mainToolbar.setTitle("");
-                layoutProfile.setVisibility(View.VISIBLE);
-            }
-            return true;
-        });
-    }
-
-    private void checkCurrentUser() {
-        if (mAuth.getCurrentUser() != null) {
-            goToDashboard();
-        }
-    }
-
-    private void signInWithGoogle() {
-        setLoadingState(true);
-        mGoogleSignInClient.signOut().addOnCompleteListener(task -> {
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            googleSignInLauncher.launch(signInIntent);
-        });
-    }
-
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
-            if (task.isSuccessful()) {
-                handleSuccessfulGoogleSignIn();
-            } else {
-                handleAuthError("فشل المصادقة مع السيرفر", task.getException());
-            }
-        });
-    }
-
-    private void handleSuccessfulGoogleSignIn() {
-        String uid = mAuth.getUid();
-        String email = mAuth.getCurrentUser().getEmail();
-        String name = mAuth.getCurrentUser().getDisplayName();
-
-        HashMap<String, Object> userMap = new HashMap<>();
-        userMap.put("email", email);
-        userMap.put("lastLogin", ServerValue.TIMESTAMP);
-        
-        if (name != null) {
-            userMap.put("displayName", name);
-            userMap.put("username", name.toLowerCase().replaceAll("[^a-z0-9._-]", ""));
-        }
-
-        mDb.child("Users").child(uid).updateChildren(userMap)
-            .addOnSuccessListener(aVoid -> {
-                Toast.makeText(MainActivity.this, "مرحباً بك!", Toast.LENGTH_SHORT).show();
-                goToDashboard();
-            })
-            .addOnFailureListener(e -> resetUI("فشل حفظ البيانات"));
-    }
-
-    private void switchMode() {
-        isLoginMode = !isLoginMode;
-        
-        Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-        
-        if (isLoginMode) {
-            tvTitle.setText("تسجيل الدخول");
-            mainActionBtn.setText("تسجيل الدخول");
-            layoutUser.setVisibility(View.GONE);
-            tvSwitchPrefix.setText("ليس لديك حساب؟ ");
-            tvSwitchAction.setText("إنشاء حساب جديد");
-        } else {
-            tvTitle.setText("إنشاء حساب");
-            mainActionBtn.setText("إنشاء حساب");
-            layoutUser.setVisibility(View.VISIBLE);
-            tvSwitchPrefix.setText("لديك حساب بالفعل؟ ");
-            tvSwitchAction.setText("تسجيل الدخول");
-        }
-        
-        clearErrors();
-        layoutUser.startAnimation(fadeIn);
-    }
-
-    private void clearErrors() {
-        regEmail.setError(null);
-        regPass.setError(null);
-        regUser.setError(null);
-    }
-
-    private void validateAndExecute() {
-        String email = regEmail.getText().toString().trim();
-        String pass = regPass.getText().toString().trim();
-        String user = regUser.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            regEmail.setError("صيغة البريد غير صحيحة"); 
-            return;
-        }
-
-        if (TextUtils.isEmpty(pass) || (isLoginMode && pass.length() < 6)) {
-            regPass.setError("كلمة المرور قصيرة جداً"); 
-            return;
-        } else if (!isLoginMode && !PASSWORD_PATTERN.matcher(pass).matches()) {
-            regPass.setError("يجب أن تحتوي على حروف كبيرة، صغيرة، أرقام، ورموز"); 
-            return;
-        }
-
-        if (!isLoginMode && (TextUtils.isEmpty(user) || !USERNAME_PATTERN.matcher(user).matches())) {
-            regUser.setError("اسم المستخدم يجب أن يكون 3-20 حرفاً (إنجليزي وأرقام فقط)"); 
-            return;
-        }
-
-        setLoadingState(true);
-
-        if (isLoginMode) {
-            mAuth.signInWithEmailAndPassword(email, pass)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, "مرحباً بعودتك!", Toast.LENGTH_SHORT).show();
-                        goToDashboard();
-                    } else {
-                        handleAuthError("فشل تسجيل الدخول", task.getException());
-                    }
-                });
-        } else {
-            mAuth.createUserWithEmailAndPassword(email, pass)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        saveUserData(user, email);
-                    } else {
-                        handleAuthError("فشل إنشاء الحساب", task.getException());
-                    }
-                });
-        }
-    }
-
-    private void saveUserData(String username, String email) {
-        String uid = mAuth.getUid();
-        HashMap<String, Object> userMap = new HashMap<>();
-        userMap.put("username", username.toLowerCase());
-        userMap.put("email", email);
-        userMap.put("createdAt", ServerValue.TIMESTAMP);
-
-        mDb.child("Users").child(uid).setValue(userMap)
-            .addOnSuccessListener(aVoid -> {
-                mDb.child("Usernames").child(username.toLowerCase()).setValue(uid);
-                Toast.makeText(this, "تم إنشاء الحساب بنجاح!", Toast.LENGTH_SHORT).show();
-                goToDashboard();
-            })
-            .addOnFailureListener(e -> resetUI("فشل حفظ بيانات المستخدم"));
-    }
-
-    private void handleAuthError(String defaultMessage, Exception exception) {
-        String errorMessage = defaultMessage;
-        if (exception instanceof FirebaseAuthInvalidCredentialsException) {
-            errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
-        } else if (exception instanceof FirebaseAuthUserCollisionException) {
-            errorMessage = "البريد الإلكتروني مستخدم بالفعل";
-        } else if (exception instanceof FirebaseAuthWeakPasswordException) {
-            errorMessage = "كلمة المرور ضعيفة جداً";
-        }
-        resetUI(errorMessage);
-    }
-
-    private void setLoadingState(boolean isLoading) {
-        loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        mainActionBtn.setEnabled(!isLoading);
-        btnGoogle.setEnabled(!isLoading);
-        btnFacebook.setEnabled(!isLoading);
-    }
-
-    private void resetUI(String errorMsg) {
-        setLoadingState(false);
-        if (errorMsg != null && !errorMsg.isEmpty()) {
-            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void goToDashboard() {
-        setLoadingState(false);
-        
-        Animation slideOut = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
-        Animation slideIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
-        
-        authView.startAnimation(slideOut);
-        authView.setVisibility(View.GONE);
-        
-        // Set profile name
-        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getDisplayName() != null) {
-            profileName.setText(mAuth.getCurrentUser().getDisplayName().toUpperCase() + " •");
-        }
-        
-        dashboardView.startAnimation(slideIn);
-        dashboardView.setVisibility(View.VISIBLE);
-        mainToolbar.setTitle("المحادثات");
-    }
-}
+            <TextView android:id="@+id/layoutChats" android:layout_width="match_parent" android:layout_height="match_parent" android:text="قائمة المحادثات ستظهر هنا قريباً" android:textColor="@color/white" android:gravity="center" android:textSize="20sp" android:visibility="visible"/>
+        </FrameLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView android:id="@+id/bottomNavigation" android:layout_width="match_parent" android:layout_height="70dp" android:layout_alignParentBottom="true" app:menu="@menu/bottom_nav" android:background="@color/bg_dark_card" app:itemTextColor="@color/text_secondary" app:itemIconTint="@color/text_secondary" android:elevation="20dp"/>
+    </RelativeLayout>
+</RelativeLayout>
