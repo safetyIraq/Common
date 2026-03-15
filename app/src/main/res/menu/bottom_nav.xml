@@ -1,28 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- قسم المحادثات -->
     <item
         android:id="@+id/nav_chats"
-        android:icon="@android:drawable/ic_dialog_email"
-        android:title="المحادثات" />
-
-    <!-- قسم جهات الاتصال -->
+        android:title="المحادثات"
+        android:icon="@android:drawable/ic_dialog_info" />
     <item
         android:id="@+id/nav_contacts"
-        android:icon="@android:drawable/ic_menu_myplaces"
-        android:title="جهات الاتصال" />
-
-    <!-- قسم الإعدادات -->
+        android:title="جهات الاتصال"
+        android:icon="@android:drawable/ic_dialog_dialer" />
     <item
         android:id="@+id/nav_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="الإعدادات" />
-
-    <!-- قسم الملف الشخصي -->
+        android:title="الإعدادات"
+        android:icon="@android:drawable/ic_menu_preferences" />
     <item
         android:id="@+id/nav_profile"
-        android:icon="@android:drawable/ic_menu_info_details"
-        android:title="الملف الشخصي" />
-
+        android:title="الملف الشخصي"
+        android:icon="@android:drawable/ic_menu_myplaces" />
 </menu>
