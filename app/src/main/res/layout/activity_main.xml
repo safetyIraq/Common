@@ -56,7 +56,7 @@
                     android:shadowDy="3"
                     android:shadowRadius="5"
                     android:text="تسجيل الدخول"
-                    android:textColor="@white"
+                    android:textColor="@color/white"
                     android:textSize="36sp"
                     android:textStyle="bold" />
 
