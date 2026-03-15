@@ -244,14 +244,51 @@
         android:visibility="gone"
         android:background="@color/bg_dark_main">
 
-        <!-- شريط الأدوات العلوي -->
+        <!-- ================================================================ -->
+        <!-- 🛠️ شريط الأدوات العلوي (Toolbar) مع عنوان وزر البحث            -->
+        <!-- ================================================================ -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/mainToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/bg_dark_main"
-            app:titleTextColor="@color/white"
-            android:elevation="4dp" />
+            android:elevation="4dp"
+            app:titleTextColor="@color/white">
+
+            <!-- حاوية داخلية لترتيب المحتوى -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="15dp">
+
+                <!-- عنوان الشاشة (المحادثات) -->
+                <TextView
+                    android:id="@+id/toolbarTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="المحادثات"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <!-- زر البحث - يفتح شاشة البحث عن المستخدمين -->
+                <ImageView
+                    android:id="@+id/btnMainSearch"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@android:drawable/ic_menu_search"
+                    android:contentDescription="بحث"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:padding="5dp"
+                    app:tint="@color/white" />
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
 
         <!-- الحاوية الرئيسية للمحتوى -->
         <FrameLayout
@@ -601,6 +638,7 @@
 
                         <!-- زر الإعدادات -->
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSettings"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -616,7 +654,7 @@
                     </LinearLayout>
 
                     <!-- ================================================ -->
-                    <!-- معلومات القناة (مثل الصورة الأولى)               -->
+                    <!-- معلومات القناة                                   -->
                     <!-- ================================================ -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -812,9 +850,10 @@
                     </LinearLayout>
 
                     <!-- ================================================ -->
-                    <!-- قسم المنشورات (مثل الصورة الثانية)               -->
+                    <!-- قسم المنشورات - مع إمكانية إضافة منشورات حقيقية -->
                     <!-- ================================================ -->
                     <LinearLayout
+                        android:id="@+id/postsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -826,7 +865,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="المشاورات"
+                            android:text="المنشورات"
                             android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -839,106 +878,16 @@
                             android:background="#333333"
                             android:layout_marginBottom="10dp" />
 
-                        <!-- منشور 1 -->
-                        <LinearLayout
+                        <!-- هذا المكان ستتم إضافة المنشورات ديناميكياً من الكود -->
+                        <TextView
+                            android:id="@+id/noPostsText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="#222222"
-                            android:padding="12dp"
-                            android:layout_marginBottom="10dp"
-                            app:cardCornerRadius="10dp">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="سعر رب الديانات نيسار"
-                                android:textColor="@color/white"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:gravity="right" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="1/1/2026."
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"
-                                android:gravity="right"
-                                android:layout_marginBottom="8dp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="بإسمك الفهم تحويض توريدا جديدة اجعلها يارب بداية خير وسعادة الفهم الذي اسالك التوفيق ❤️"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:gravity="right"
-                                android:layout_marginBottom="8dp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="end">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0:10"
-                                    android:textColor="@color/icon_blue"
-                                    android:textSize="12sp"
-                                    android:layout_marginEnd="15dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="25"
-                                    android:textColor="@color/icon_blue"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- منشور 2 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="#222222"
-                            android:padding="12dp"
-                            android:layout_marginBottom="10dp"
-                            app:cardCornerRadius="10dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center"
-                                android:layout_marginBottom="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0:37"
-                                    android:textColor="@color/icon_blue"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="23"
-                                    android:textColor="@color/icon_blue"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="0:29"
-                                android:textColor="@color/icon_blue"
-                                android:textSize="12sp"
-                                android:gravity="end" />
-                        </LinearLayout>
+                            android:text="لا توجد منشورات بعد"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:padding="20dp" />
                     </LinearLayout>
 
                     <!-- ================================================ -->
@@ -948,7 +897,7 @@
                         android:id="@+id/btnAddPost"
                         android:layout_width="wrap_content"
                         android:layout_height="60dp"
-                        android:text="اضافة منشور"
+                        android:text="إضافة منشور"
                         android:textColor="@color/white"
                         android:backgroundTint="@color/icon_blue"
                         app:cornerRadius="30dp"
