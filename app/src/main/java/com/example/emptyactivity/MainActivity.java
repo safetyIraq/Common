@@ -19,6 +19,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.ui.AppBarConfiguration;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,6 +33,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
@@ -44,6 +48,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,6 +79,15 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnSetImage, btnEditProfile, btnAddPost;
     private FloatingActionButton btnChangeImage;
     private LinearLayout layoutEditName, layoutEditBio, layoutEditUsername;
+
+    // ============================================================
+    // ================ متغيرات القائمة الجانبية الجديدة ================
+    // ============================================================
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ImageView btnOpenDrawer;
+    private CircleImageView drawerImage;
+    private TextView drawerName, drawerEmail;
 
     // ============================================================
     // متغيرات Firebase
@@ -133,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         setupGoogleSignIn();
         setupClickListeners();
         setupBottomNavigation();
+        setupNavigationDrawer(); // 👈 إضافة إعداد القائمة الجانبية
         checkCurrentUser();
     }
 
@@ -173,6 +189,117 @@ public class MainActivity extends AppCompatActivity {
         layoutEditName = findViewById(R.id.layoutEditName);
         layoutEditBio = findViewById(R.id.layoutEditBio);
         layoutEditUsername = findViewById(R.id.layoutEditUsername);
+
+        // ================ عناصر القائمة الجانبية الجديدة ================
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+        btnOpenDrawer = findViewById(R.id.btnOpenDrawer);
+
+        // عناصر رأس القائمة الجانبية
+        View headerView = navigationView.getHeaderView(0);
+        drawerImage = headerView.findViewById(R.id.drawerImage);
+        drawerName = headerView.findViewById(R.id.drawerName);
+        drawerEmail = headerView.findViewById(R.id.drawerEmail);
+    }
+
+    // ============================================================
+    // إعداد القائمة الجانبية (Navigation Drawer)
+    // ============================================================
+    private void setupNavigationDrawer() {
+        // فتح القائمة عند الضغط على زر القائمة
+        if (btnOpenDrawer != null) {
+            btnOpenDrawer.setOnClickListener(v -> {
+                drawerLayout.openDrawer(GravityCompat.START);
+            });
+        }
+
+        // التعامل مع ضغطات أزرار القائمة الجانبية
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.menu_profile) {
+                // الانتقال إلى الملف الشخصي
+                mainToolbar.setTitle("");
+                layoutSettings.setVisibility(View.GONE);
+                layoutChats.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.VISIBLE);
+                bottomNavigation.setSelectedItemId(R.id.nav_profile);
+                
+            } else if (id == R.id.menu_chats) {
+                // الانتقال إلى المحادثات
+                mainToolbar.setTitle("المحادثات");
+                layoutSettings.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutChats.setVisibility(View.VISIBLE);
+                bottomNavigation.setSelectedItemId(R.id.nav_chats);
+                
+            } else if (id == R.id.menu_settings) {
+                // الانتقال إلى الإعدادات
+                mainToolbar.setTitle("الإعدادات");
+                layoutSettings.setVisibility(View.VISIBLE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutChats.setVisibility(View.GONE);
+                bottomNavigation.setSelectedItemId(R.id.nav_settings);
+                
+            } else if (id == R.id.menu_search) {
+                // فتح شاشة البحث
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
+                
+            } else if (id == R.id.menu_logout) {
+                // تسجيل الخروج
+                logoutUser();
+            }
+
+            // غلق القائمة بعد الاختيار
+            drawerLayout.closeDrawers();
+            return true;
+        });
+    }
+
+    // ============================================================
+    // تسجيل الخروج
+    // ============================================================
+    private void logoutUser() {
+        new AlertDialog.Builder(this)
+                .setTitle("تسجيل الخروج")
+                .setMessage("هل أنت متأكد من تسجيل الخروج؟")
+                .setPositiveButton("نعم", (dialog, which) -> {
+                    mAuth.signOut();
+                    mGoogleSignInClient.signOut();
+                    
+                    // العودة لشاشة تسجيل الدخول
+                    authView.setVisibility(View.VISIBLE);
+                    dashboardView.setVisibility(View.GONE);
+                    
+                    Toast.makeText(this, "تم تسجيل الخروج", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("إلغاء", null)
+                .show();
+    }
+
+    // ============================================================
+    // تحديث معلومات المستخدم في القائمة الجانبية
+    // ============================================================
+    private void updateDrawerHeader(String name, String email, String imageUrl) {
+        if (drawerName != null) {
+            drawerName.setText(name != null ? name : "مستخدم");
+        }
+        
+        if (drawerEmail != null) {
+            drawerEmail.setText(email != null ? email : "user@example.com");
+        }
+
+        if (drawerImage != null) {
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(this)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.bg_login)
+                        .error(R.drawable.bg_login)
+                        .into(drawerImage);
+            } else {
+                drawerImage.setImageResource(R.drawable.bg_login);
+            }
+        }
     }
 
     // ============================================================
@@ -440,6 +567,7 @@ public class MainActivity extends AppCompatActivity {
                     String bio = snapshot.child("bio").getValue(String.class);
                     String username = snapshot.child("username").getValue(String.class);
                     String image = snapshot.child("profileImage").getValue(String.class);
+                    String email = snapshot.child("email").getValue(String.class);
 
                     if (name != null) profileName.setText(name + " •");
                     if (bio != null) profileBio.setText(bio);
@@ -452,6 +580,9 @@ public class MainActivity extends AppCompatActivity {
                                 .error(R.drawable.bg_login)
                                 .into(profileImage);
                     }
+
+                    // تحديث القائمة الجانبية
+                    updateDrawerHeader(name, email, image);
                 }
             }
 
@@ -629,5 +760,17 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setNegativeButton("إلغاء", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    // ============================================================
+    // عند الضغط على زر الرجوع
+    // ============================================================
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
