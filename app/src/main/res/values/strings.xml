@@ -8,10 +8,6 @@
     <!-- ================================================================ -->
     <!-- 🔑 مفاتيح Firebase وخدمات جوجل - Firebase Keys                   -->
     <!-- ================================================================ -->
-    <!-- 
-        هام جداً: هذا المفتاح يأتي من ملف google-services.json
-        بعد إضافة Firebase لمشروعك، هذا المفتاح يتم إنشاؤه تلقائياً
-    -->
     <string name="default_web_client_id" translatable="false">559417035417-7lqj4k7jq4k7jq4k7jq4k7jq4k7jq4k.apps.googleusercontent.com</string>
 
     <!-- ================================================================ -->
@@ -39,16 +35,11 @@
     <!-- ================================================================ -->
     <!-- 🔐 شاشة المصادقة - Authentication Screen                         -->
     <!-- ================================================================ -->
-    <!-- عناوين -->
     <string name="login">تسجيل الدخول</string>
     <string name="signup">إنشاء حساب</string>
-    
-    <!-- حقول الإدخال -->
     <string name="email">البريد الإلكتروني</string>
     <string name="password">كلمة المرور</string>
     <string name="username">اسم المستخدم</string>
-    
-    <!-- نصوص إضافية -->
     <string name="or_continue_with">أو المتابعة باستخدام</string>
     <string name="no_account">ليس لديك حساب؟</string>
     <string name="have_account">لديك حساب بالفعل؟</string>
@@ -84,18 +75,13 @@
     <!-- ================================================================ -->
     <!-- 👤 نصوص الملف الشخصي - Profile Screen                            -->
     <!-- ================================================================ -->
-    <!-- أزرار -->
     <string name="set_image">تعيين صورة</string>
     <string name="edit_data">تعديل البيانات</string>
     <string name="settings">الإعدادات</string>
     <string name="add_post">إضافة منشور</string>
-    
-    <!-- تسميات -->
     <string name="bio_label">النبذة</string>
     <string name="username_label">اسم المستخدم</string>
     <string name="birthday_label">يوم الميلاد</string>
-    
-    <!-- قيم افتراضية -->
     <string name="default_birthday">أبريل 10، 1920 (٥١) سنوات</string>
 
     <!-- ================================================================ -->
@@ -109,9 +95,12 @@
     <!-- ================================================================ -->
     <string name="posts_title">المنشورات</string>
     <string name="no_posts">لا توجد منشورات بعد</string>
+    
+    <!-- 👇 أضف هذه الأسطر الثلاثة هنا -->
     <string name="like">إعجاب</string>
     <string name="comment">تعليق</string>
     <string name="share">مشاركة</string>
+    
     <string name="likes_count">%d إعجاب</string>
     <string name="comments_count">%d تعليق</string>
 
