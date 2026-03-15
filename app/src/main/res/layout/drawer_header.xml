@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    ================================================================
+    📱 رأس القائمة الجانبية (Navigation Drawer Header)
+    ================================================================
+    يعرض معلومات المستخدم في أعلى القائمة الجانبية
+    - الصورة الشخصية
+    - الاسم
+    - البريد الإلكتروني
+    ================================================================
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="@color/bg_dark_card"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:paddingBottom="25dp"
+    android:layoutDirection="rtl"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    tools:ignore="RtlHardcoded">
+
+    <!-- 
+        ========================================================
+        🖼️ صورة المستخدم - دائرية مع إطار خفيف
+        ========================================================
+    -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/drawerImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/bg_login"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/profile_image_description"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/icon_blue"
+        android:elevation="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        tools:src="@tools:sample/avatars" />
+
+    <!-- 
+        ========================================================
+        📝 اسم المستخدم
+        ========================================================
+    -->
+    <TextView
+        android:id="@+id/drawerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/default_drawer_name"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:shadowColor="#33000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        tools:text="HUSSEIN" />
+
+    <!-- 
+        ========================================================
+        📧 البريد الإلكتروني
+        ========================================================
+    -->
+    <TextView
+        android:id="@+id/drawerEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/default_drawer_email"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="hussein@example.com" />
+
+    <!-- 
+        ========================================================
+        🌟 حالة المستخدم (يمكن إضافتها لاحقاً)
+        ========================================================
+    -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        android:id="@+id/drawerStatusLayout"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/circle_online_status"
+            android:layout_marginEnd="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/online"
+            android:textColor="@color/icon_blue"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>
