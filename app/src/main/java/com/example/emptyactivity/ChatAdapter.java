@@ -15,8 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_SENT = 1;
@@ -25,13 +23,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ChatMessage> messageList;
     private String currentUserId;
     private String receiverName;
-    private String receiverImage;
 
-    public ChatAdapter(List<ChatMessage> messageList, String receiverName, String receiverImage) {
+    public ChatAdapter(List<ChatMessage> messageList, String receiverName) {
         this.messageList = messageList;
         this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         this.receiverName = receiverName;
-        this.receiverImage = receiverImage;
     }
 
     @Override
@@ -65,7 +61,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof SentMessageViewHolder) {
             ((SentMessageViewHolder) holder).bind(message);
         } else if (holder instanceof ReceivedMessageViewHolder) {
-            ((ReceivedMessageViewHolder) holder).bind(message, receiverName, receiverImage);
+            ((ReceivedMessageViewHolder) holder).bind(message, receiverName);
         }
     }
 
@@ -75,43 +71,32 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static class SentMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageText, messageTime, messageStatus;
+        TextView messageText, messageTime;
 
         SentMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             messageText = itemView.findViewById(R.id.messageText);
             messageTime = itemView.findViewById(R.id.messageTime);
-            messageStatus = itemView.findViewById(R.id.messageStatus);
         }
 
         void bind(ChatMessage message) {
             messageText.setText(message.getMessage());
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.US);
             messageTime.setText(sdf.format(new Date(message.getTimestamp())));
-            
-            if (message.isRead()) {
-                messageStatus.setText("✓✓");
-                messageStatus.setTextColor(0xFF4CAF50);
-            } else {
-                messageStatus.setText("✓");
-                messageStatus.setTextColor(0xFF999999);
-            }
         }
     }
 
     static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText, messageTime, senderName;
-        CircleImageView senderImage;
 
         ReceivedMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             messageText = itemView.findViewById(R.id.messageText);
             messageTime = itemView.findViewById(R.id.messageTime);
             senderName = itemView.findViewById(R.id.senderName);
-            senderImage = itemView.findViewById(R.id.senderImage);
         }
 
-        void bind(ChatMessage message, String name, String imageUrl) {
+        void bind(ChatMessage message, String name) {
             messageText.setText(message.getMessage());
             senderName.setText(name);
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.US);
