@@ -411,7 +411,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         // ================================================================
-        // 👇 هذا هو الجزء المهم - زر المحادثة
+        // 👇 زر المحادثة - يفتح ChatActivity
         // ================================================================
         private void setupItemClickListeners(@NonNull UserViewHolder holder, User user, int position) {
             // عند الضغط على زر المحادثة (فتح ChatActivity)
@@ -466,4 +466,4 @@ public class SearchActivity extends AppCompatActivity {
     private void showUserProfile(User user) {
         Toast.makeText(this, "عرض ملف " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
     }
-                    }
+                }
