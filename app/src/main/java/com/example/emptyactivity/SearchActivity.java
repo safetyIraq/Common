@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,16 +43,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchActivity extends AppCompatActivity {
 
-    // ================================================================
-    // 🔧 الثوابت
-    // ================================================================
     private static final long SEARCH_DELAY_MS = 500;
     private static final int MIN_SEARCH_CHARS = 1;
     private static final String DATABASE_PATH_USERS = "Users";
 
-    // ================================================================
-    // 📊 متغيرات الواجهة
-    // ================================================================
     private EditText etSearch;
     private RecyclerView rvSearchResults;
     private ImageView btnBack;
@@ -59,25 +54,15 @@ public class SearchActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar loadingIndicator;
 
-    // ================================================================
-    // 🔄 متغيرات البيانات
-    // ================================================================
     private SearchAdapter adapter;
     private List<User> userList;
     private List<User> filteredList;
     private DatabaseReference mDb;
 
-    // ================================================================
-    // ⚡ متغيرات التحكم
-    // ================================================================
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
     private AtomicBoolean isSearching = new AtomicBoolean(false);
     private ValueEventListener searchListener;
-
-    // ================================================================
-    // 🏗️ دورة حياة النشاط
-    // ================================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,19 +77,6 @@ public class SearchActivity extends AppCompatActivity {
         loadAllUsers();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        searchHandler.removeCallbacksAndMessages(null);
-        if (searchListener != null && mDb != null) {
-            mDb.removeEventListener(searchListener);
-        }
-    }
-
-    // ================================================================
-    // 🎨 تهيئة الواجهات
-    // ================================================================
-
     private void initViews() {
         etSearch = findViewById(R.id.etSearch);
         rvSearchResults = findViewById(R.id.rvSearchResults);
@@ -112,7 +84,6 @@ public class SearchActivity extends AppCompatActivity {
         tvNoResults = findViewById(R.id.tvNoResults);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         loadingIndicator = findViewById(R.id.loadingIndicator);
-
         setupKeyboardAction();
     }
 
@@ -127,33 +98,19 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    // ================================================================
-    // 🔥 إعداد Firebase
-    // ================================================================
-
     private void setupFirebase() {
         mDb = FirebaseDatabase.getInstance().getReference(DATABASE_PATH_USERS);
     }
 
-    // ================================================================
-    // 📋 إعداد RecyclerView
-    // ================================================================
-
     private void setupRecyclerView() {
         userList = new ArrayList<>();
         filteredList = new ArrayList<>();
-
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
         rvSearchResults.setHasFixedSize(true);
         rvSearchResults.setItemViewCacheSize(20);
-
         adapter = new SearchAdapter(filteredList);
         rvSearchResults.setAdapter(adapter);
     }
-
-    // ================================================================
-    // 👆 إعداد مستمعي الأحداث
-    // ================================================================
 
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> {
@@ -173,10 +130,6 @@ public class SearchActivity extends AppCompatActivity {
         loadAllUsers();
     }
 
-    // ================================================================
-    // 🔍 إعداد البحث
-    // ================================================================
-
     private void setupSearchListener() {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -185,9 +138,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchHandler.removeCallbacks(searchRunnable);
-
                 String searchText = s.toString().trim();
-
                 if (searchText.length() >= MIN_SEARCH_CHARS) {
                     showLoading(true);
                     searchRunnable = () -> performSearch(searchText.toLowerCase(Locale.getDefault()));
@@ -206,13 +157,8 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    // ================================================================
-    // 📥 تحميل البيانات
-    // ================================================================
-
     private void loadAllUsers() {
         showLoading(true);
-
         if (searchListener != null) {
             mDb.removeEventListener(searchListener);
         }
@@ -221,20 +167,16 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
-
                 for (DataSnapshot data : snapshot.getChildren()) {
                     User user = data.getValue(User.class);
                     if (user != null) {
                         userList.add(user);
                     }
                 }
-
                 sortUsersByName();
-
                 filteredList.clear();
                 filteredList.addAll(userList);
                 adapter.notifyDataSetChanged();
-
                 updateNoResultsVisibility();
                 showLoading(false);
                 swipeRefreshLayout.setRefreshing(false);
@@ -247,7 +189,6 @@ public class SearchActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         };
-
         mDb.addValueEventListener(searchListener);
     }
 
@@ -259,24 +200,17 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    // ================================================================
-    // 🔎 تنفيذ البحث
-    // ================================================================
-
     private void performSearch(String searchText) {
         if (isSearching.get()) return;
-
         isSearching.set(true);
 
         new Thread(() -> {
             List<User> results = new ArrayList<>();
-
             for (User user : userList) {
                 if (isMatch(user, searchText)) {
                     results.add(user);
                 }
             }
-
             runOnUiThread(() -> {
                 filteredList.clear();
                 filteredList.addAll(results);
@@ -290,28 +224,14 @@ public class SearchActivity extends AppCompatActivity {
 
     private boolean isMatch(User user, String searchText) {
         if (user == null || searchText == null || searchText.isEmpty()) return false;
-
         String username = user.getUsername();
-        if (username != null && username.toLowerCase(Locale.getDefault()).contains(searchText)) {
-            return true;
-        }
-
+        if (username != null && username.toLowerCase(Locale.getDefault()).contains(searchText)) return true;
         String displayName = user.getDisplayName();
-        if (displayName != null && displayName.toLowerCase(Locale.getDefault()).contains(searchText)) {
-            return true;
-        }
-
+        if (displayName != null && displayName.toLowerCase(Locale.getDefault()).contains(searchText)) return true;
         String email = user.getEmail();
-        if (email != null && email.toLowerCase(Locale.getDefault()).contains(searchText)) {
-            return true;
-        }
-
+        if (email != null && email.toLowerCase(Locale.getDefault()).contains(searchText)) return true;
         return false;
     }
-
-    // ================================================================
-    // 🎯 تحديث الواجهة
-    // ================================================================
 
     private void updateNoResultsVisibility() {
         if (tvNoResults != null) {
@@ -331,10 +251,6 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    // ================================================================
-    // ⚠️ معالجة الأخطاء
-    // ================================================================
-
     private void handleDatabaseError(@NonNull DatabaseError error) {
         String errorMessage;
         switch (error.getCode()) {
@@ -348,16 +264,10 @@ public class SearchActivity extends AppCompatActivity {
                 errorMessage = "حدث خطأ: " + error.getMessage();
                 break;
         }
-
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-    // ================================================================
-    // 📦 محول RecyclerView
-    // ================================================================
-
     class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.UserViewHolder> {
-
         private final List<User> users;
         private int lastAnimatedPosition = -1;
 
@@ -377,7 +287,6 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
             User user = users.get(position);
-
             animateItemView(holder.itemView, position);
             bindUserData(holder, user);
             setupItemClickListeners(holder, user, position);
@@ -393,10 +302,8 @@ public class SearchActivity extends AppCompatActivity {
         private void bindUserData(@NonNull UserViewHolder holder, User user) {
             String displayName = user.getDisplayName() != null ? user.getDisplayName() + " •" : "مستخدم •";
             holder.itemName.setText(displayName);
-
             String bio = user.getBio();
             holder.itemBio.setText(bio != null && !bio.isEmpty() ? bio : "لا توجد نبذة");
-
             String imageUrl = user.getProfileImage();
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Glide.with(SearchActivity.this)
@@ -410,27 +317,26 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
-        // ================================================================
-        // 👇 زر المحادثة - يفتح ChatActivity
-        // ================================================================
         private void setupItemClickListeners(@NonNull UserViewHolder holder, User user, int position) {
-            // عند الضغط على زر المحادثة (فتح ChatActivity)
             holder.btnChatWithUser.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.fade_in));
                 
-                // فتح محادثة مع المستخدم
+                if (user == null || user.getUid() == null || user.getUid().isEmpty()) {
+                    Toast.makeText(SearchActivity.this, "خطأ: بيانات المستخدم غير صحيحة", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.d("CHAT_DEBUG", "Opening chat with: " + user.getDisplayName() + " (ID: " + user.getUid() + ")");
+                
                 Intent chatIntent = new Intent(SearchActivity.this, ChatActivity.class);
                 chatIntent.putExtra("user_id", user.getUid());
                 chatIntent.putExtra("user_name", user.getDisplayName());
-                chatIntent.putExtra("user_image", user.getProfileImage());
+                chatIntent.putExtra("user_image", user.getProfileImage() != null ? user.getProfileImage() : "");
                 startActivity(chatIntent);
-                
-                Toast.makeText(SearchActivity.this, "جاري فتح المحادثة مع " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
             });
 
-            // عند الضغط على العنصر ككل (عرض الملف الشخصي)
             holder.itemView.setOnClickListener(v -> {
-                showUserProfile(user);
+                Toast.makeText(SearchActivity.this, user.getDisplayName(), Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -458,12 +364,4 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     }
-
-    // ================================================================
-    // 🚀 وظائف إضافية
-    // ================================================================
-
-    private void showUserProfile(User user) {
-        Toast.makeText(this, "عرض ملف " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
     }
-                }
