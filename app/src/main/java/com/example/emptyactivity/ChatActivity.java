@@ -58,8 +58,16 @@ public class ChatActivity extends AppCompatActivity {
         receiverName = getIntent().getStringExtra("user_name");
         receiverImage = getIntent().getStringExtra("user_image");
 
+        // التحقق من استقبال البيانات
+        if (receiverId == null || receiverName == null) {
+            Toast.makeText(this, "خطأ في فتح المحادثة", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         initViews();
         setupFirebase();
+        checkFirebaseConnection();
         setupChatRoom();
         loadMessages();
         setupClickListeners();
@@ -80,7 +88,10 @@ public class ChatActivity extends AppCompatActivity {
 
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        userName.setText(receiverName);
+        // عرض اسم المستخدم المستقبل
+        userName.setText(receiverName != null ? receiverName : "مستخدم");
+        
+        // عرض صورة المستخدم إذا كانت موجودة
         if (receiverImage != null && !receiverImage.isEmpty()) {
             Glide.with(this).load(receiverImage).into(userImage);
         }
@@ -96,6 +107,28 @@ public class ChatActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDb = FirebaseDatabase.getInstance().getReference();
         currentUserId = mAuth.getCurrentUser().getUid();
+    }
+
+    private void checkFirebaseConnection() {
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class) != null && snapshot.getValue(Boolean.class);
+                if (connected) {
+                    userStatus.setText("متصل");
+                    userStatus.setTextColor(0xFF4CAF50);
+                } else {
+                    userStatus.setText("غير متصل");
+                    userStatus.setTextColor(0xFF999999);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                userStatus.setText("غير متصل");
+            }
+        });
     }
 
     private void setupChatRoom() {
