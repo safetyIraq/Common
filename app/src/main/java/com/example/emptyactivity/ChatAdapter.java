@@ -17,13 +17,10 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * محول عرض رسائل المحادثة
- */
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_TYPE_SENT = 1;  // رسالة مرسلة (على اليمين)
-    private static final int VIEW_TYPE_RECEIVED = 2; // رسالة مستقبلة (على اليسار)
+    private static final int VIEW_TYPE_SENT = 1;
+    private static final int VIEW_TYPE_RECEIVED = 2;
 
     private List<ChatMessage> messageList;
     private String currentUserId;
@@ -77,7 +74,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return messageList.size();
     }
 
-    // ViewHolder للرسائل المرسلة
     static class SentMessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText, messageTime, messageStatus;
 
@@ -90,23 +86,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void bind(ChatMessage message) {
             messageText.setText(message.getMessage());
-            
-            // تنسيق الوقت
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.US);
             messageTime.setText(sdf.format(new Date(message.getTimestamp())));
-
-            // حالة الرسالة (مقروءة أم لا)
+            
             if (message.isRead()) {
                 messageStatus.setText("✓✓");
-                messageStatus.setTextColor(0xFF4CAF50); // أخضر
+                messageStatus.setTextColor(0xFF4CAF50);
             } else {
                 messageStatus.setText("✓");
-                messageStatus.setTextColor(0xFF999999); // رمادي
+                messageStatus.setTextColor(0xFF999999);
             }
         }
     }
 
-    // ViewHolder للرسائل المستقبلة
     static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText, messageTime, senderName;
         CircleImageView senderImage;
@@ -122,14 +114,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void bind(ChatMessage message, String name, String imageUrl) {
             messageText.setText(message.getMessage());
             senderName.setText(name);
-
-            // تنسيق الوقت
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.US);
             messageTime.setText(sdf.format(new Date(message.getTimestamp())));
-
-            // تحميل الصورة (اختياري)
-            // إذا عندك Glide تقدر تحمل الصورة
-            // Glide.with(itemView.getContext()).load(imageUrl).into(senderImage);
         }
     }
 }
