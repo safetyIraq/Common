@@ -166,7 +166,7 @@ public class SearchActivity extends AppCompatActivity {
                 for (DataSnapshot data : snapshot.getChildren()) {
                     User user = data.getValue(User.class);
                     if (user != null) {
-                        // التأكد من تعيين UID
+                        // ✅ التأكد من تعيين UID من مفتاح Firebase
                         if (user.getUid() == null || user.getUid().isEmpty()) {
                             user.setUid(data.getKey());
                         }
@@ -251,9 +251,6 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    // ================================================================
-    // 📦 محول RecyclerView (Adapter)
-    // ================================================================
     class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.UserViewHolder> {
         private final List<User> users;
 
@@ -297,11 +294,8 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
-        // ================================================================
-        // 👇 هذا هو الكود الصحيح (بدون استخدام position)
-        // ================================================================
+        // ✅ زر المحادثة - المعدل النهائي
         private void setupItemClickListeners(@NonNull UserViewHolder holder, User user) {
-            // زر المحادثة
             holder.btnChatWithUser.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.fade_in));
                 
@@ -316,12 +310,13 @@ public class SearchActivity extends AppCompatActivity {
                 String userName = user.getDisplayName();
                 String userImage = user.getProfileImage();
                 
-                // إذا كان UID فارغ، نستخدم المفتاح من قاعدة البيانات (data.getKey())
+                // طباعة للتحقق
+                Log.d("CHAT_DEBUG", "محاولة فتح محادثة مع: " + userName);
+                Log.d("CHAT_DEBUG", "المعرف: " + userId);
+                
                 if (userId == null || userId.isEmpty()) {
-                    // نحاول الحصول على UID من user (إذا كان محفوظاً)
-                    // أو نستخدم معرف بديل
-                    userId = "user_" + System.currentTimeMillis(); // استخدام الوقت كمعرف مؤقت
-                    Toast.makeText(SearchActivity.this, "تحذير: معرف المستخدم غير معروف", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchActivity.this, "خطأ: معرف المستخدم غير صحيح", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 
                 if (userName == null || userName.isEmpty()) {
@@ -340,7 +335,6 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(chatIntent);
             });
 
-            // الضغط على العنصر
             holder.itemView.setOnClickListener(v -> {
                 Toast.makeText(SearchActivity.this, user.getDisplayName(), Toast.LENGTH_SHORT).show();
             });
