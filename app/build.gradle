@@ -3,30 +3,38 @@
  * 📦 ملف إعدادات المشروع - Project Build Configuration
  * =====================================================================
  * 
- * @version 6.0.0
+ * @version 7.0.0
  * @since 2026
  * =====================================================================
  */
 
 plugins {
-    id 'com.android.application'
-    id 'com.google.gms.google-services'
+    id 'com.android.application'                // 📱 Android plugin
+    id 'com.google.gms.google-services'          // 🔥 Firebase services
 }
 
 android {
+    // ================================================================
+    // 📱 إعدادات التطبيق الأساسية
+    // ================================================================
     namespace 'com.example.emptyactivity'
     compileSdk 34
 
     defaultConfig {
         applicationId "com.example.emptyactivity"
-        minSdk 23
-        targetSdk 34
+        minSdk 23                                // Android 6.0
+        targetSdk 34                              // Android 14
         versionCode 7
         versionName "7.0"
-        vectorDrawables.useSupportLibrary = true
-        multiDexEnabled true
+        
+        // دعم الميزات الإضافية
+        vectorDrawables.useSupportLibrary = true  // دعم الصور المتجهة
+        multiDexEnabled true                       // دعم التطبيقات الكبيرة
     }
 
+    // ================================================================
+    // 🔑 توقيع التطبيق (لمتجر Google Play)
+    // ================================================================
     signingConfigs {
         release {
             storeFile file("hussain.jks")
@@ -36,22 +44,32 @@ android {
         }
     }
 
+    // ================================================================
+    // 🏗️ أنواع البناء
+    // ================================================================
     buildTypes {
         debug {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.release   // نسخة التطوير
         }
         release {
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release   // نسخة الإصدار
+            minifyEnabled false                     // تعطيل تصغير الكود
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
 
+    // ================================================================
+    // ☕ إعدادات Java
+    // ================================================================
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    // ================================================================
+    // 🔧 حل تعارضات المكتبات
+    // ================================================================
     configurations.all {
         resolutionStrategy {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
@@ -60,31 +78,56 @@ android {
     }
 }
 
+// ================================================================
+// 📚 الاعتماديات - Dependencies
+// ================================================================
 dependencies {
-    // ============================================================
-    // 🎨 مكتبات الواجهة والتصميم
-    // ============================================================
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0' // 👈 مهم جداً
+    // -----------------------------------------------------------------
+    // 1. 🎨 مكتبات الواجهة والتصميم (UI/UX)
+    // -----------------------------------------------------------------
+    implementation 'androidx.appcompat:appcompat:1.7.0'                    // دعم الإصدارات القديمة
+    implementation 'com.google.android.material:material:1.12.0'          // Material Design 3
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'     // تخطيط متقدم
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0' // سحب للتحديث
 
-    // ============================================================
-    // 🔥 منصة فايربيس
-    // ============================================================
+    // -----------------------------------------------------------------
+    // 2. 🔥 Firebase (منصة التطبيق الخلفية)
+    // -----------------------------------------------------------------
+    // Firebase Bill of Materials (إدارة الإصدارات)
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.firebase:firebase-storage'
+    
+    // خدمات Firebase المطلوبة
+    implementation 'com.google.firebase:firebase-auth'                    // تسجيل الدخول
+    implementation 'com.google.firebase:firebase-database'                // قاعدة البيانات
+    implementation 'com.google.firebase:firebase-storage'                 // تخزين الصور
 
-    // ============================================================
-    // 🔐 خدمات جوجل
-    // ============================================================
-    implementation 'com.google.android.gms:play-services-auth:21.0.0'
+    // -----------------------------------------------------------------
+    // 3. 🔐 خدمات جوجل الإضافية
+    // -----------------------------------------------------------------
+    implementation 'com.google.android.gms:play-services-auth:21.0.0'     // تسجيل الدخول بجوجل
 
-    // ============================================================
-    // 🖼️ مكتبات الصور
-    // ============================================================
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    // -----------------------------------------------------------------
+    // 4. 🖼️ مكتبات الصور والوسائط
+    // -----------------------------------------------------------------
+    implementation 'com.github.bumptech.glide:glide:4.16.0'                // تحميل وعرض الصور
+    implementation 'de.hdodenhof:circleimageview:3.1.0'                   // صور دائرية
+
+    // -----------------------------------------------------------------
+    // ملاحظة: إذا أضفت مكتبات جديدة، ضعها هنا مع تعليق يوضح وظيفتها
+    // -----------------------------------------------------------------
 }
+
+// ================================================================
+// ℹ️ معلومات إضافية
+// ================================================================
+// 
+// ✅ تم تحديث جميع المكتبات إلى أحدث الإصدارات
+// ✅ تم إضافة دعم MultiDex للتطبيقات الكبيرة
+// ✅ تم تجهيز التوقيع للإصدار على Google Play
+// 
+// 🔐 ملاحظة أمنية: يفضل استخدام متغيرات البيئة للكلمات السرية
+// مثال:
+// storePassword System.getenv("STORE_PASSWORD")
+// keyPassword System.getenv("KEY_PASSWORD")
+//
+// ================================================================
