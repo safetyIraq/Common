@@ -55,15 +55,19 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        // استقبال البيانات
+        // ✅ استقبال البيانات مع التحقق
         Intent intent = getIntent();
         if (intent != null) {
             receiverId = intent.getStringExtra("user_id");
             receiverName = intent.getStringExtra("user_name");
             receiverImage = intent.getStringExtra("user_image");
+            
+            Log.d("CHAT_DEBUG", "=== بيانات المستلم في ChatActivity ===");
+            Log.d("CHAT_DEBUG", "receiverId: " + receiverId);
+            Log.d("CHAT_DEBUG", "receiverName: " + receiverName);
         }
 
-        // التحقق من البيانات
+        // ✅ التحقق النهائي
         if (receiverId == null || receiverId.isEmpty()) {
             Toast.makeText(this, "خطأ: معرف المستخدم غير صحيح", Toast.LENGTH_LONG).show();
             finish();
@@ -107,11 +111,15 @@ public class ChatActivity extends AppCompatActivity {
         
         // عرض الصورة
         if (receiverImage != null && !receiverImage.isEmpty()) {
-            Glide.with(this)
-                    .load(receiverImage)
-                    .placeholder(R.drawable.bg_login)
-                    .error(R.drawable.bg_login)
-                    .into(userImage);
+            try {
+                Glide.with(this)
+                        .load(receiverImage)
+                        .placeholder(R.drawable.bg_login)
+                        .error(R.drawable.bg_login)
+                        .into(userImage);
+            } catch (Exception e) {
+                userImage.setImageResource(R.drawable.bg_login);
+            }
         } else {
             userImage.setImageResource(R.drawable.bg_login);
         }
@@ -142,6 +150,7 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             chatRoomId = receiverId + "_" + currentUserId;
         }
+        Log.d("CHAT_DEBUG", "معرف غرفة المحادثة: " + chatRoomId);
     }
 
     private void loadMessages() {
@@ -151,9 +160,13 @@ public class ChatActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         messageList.clear();
                         for (DataSnapshot data : snapshot.getChildren()) {
-                            ChatMessage message = data.getValue(ChatMessage.class);
-                            if (message != null) {
-                                messageList.add(message);
+                            try {
+                                ChatMessage message = data.getValue(ChatMessage.class);
+                                if (message != null) {
+                                    messageList.add(message);
+                                }
+                            } catch (Exception e) {
+                                // تجاهل الرسائل التالفة
                             }
                         }
                         chatAdapter.notifyDataSetChanged();
@@ -197,9 +210,10 @@ public class ChatActivity extends AppCompatActivity {
                 .setValue(message.toMap())
                 .addOnSuccessListener(aVoid -> {
                     etMessage.setText("");
+                    recyclerView.scrollToPosition(messageList.size());
                 })
                 .addOnFailureListener(e -> 
                     Toast.makeText(ChatActivity.this, "فشل في إرسال الرسالة", Toast.LENGTH_SHORT).show()
                 );
     }
-}
+            }
