@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 public class User {
     
-    // المتغيرات
     private String uid;
     private String displayName;
     private String username;
@@ -13,11 +12,8 @@ public class User {
     private String bio;
     private String email;
 
-    // مُشيد فارغ (مهم لـ Firebase)
-    public User() {
-    }
+    public User() {}
 
-    // مُشيد كامل
     public User(String uid, String displayName, String username, 
                 String profileImage, String bio, String email) {
         this.uid = uid;
@@ -28,7 +24,6 @@ public class User {
         this.email = email;
     }
 
-    // Getters مع التحقق من null (هذا هو الحل)
     @NonNull
     public String getUid() { 
         return uid != null ? uid : ""; 
@@ -59,38 +54,10 @@ public class User {
         return email != null ? email : ""; 
     }
 
-    // Setters
-    public void setUid(String uid) { 
-        this.uid = uid; 
-    }
-
-    public void setDisplayName(String displayName) { 
-        this.displayName = displayName; 
-    }
-
-    public void setUsername(String username) { 
-        this.username = username; 
-    }
-
-    public void setProfileImage(String profileImage) { 
-        this.profileImage = profileImage; 
-    }
-
-    public void setBio(String bio) { 
-        this.bio = bio; 
-    }
-
-    public void setEmail(String email) { 
-        this.email = email; 
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "User{" +
-                "uid='" + uid + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", username='" + username + '\'' +
-                '}';
-    }
+    public void setUid(String uid) { this.uid = uid; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public void setUsername(String username) { this.username = username; }
+    public void setProfileImage(String profileImage) { this.profileImage = profileImage; }
+    public void setBio(String bio) { this.bio = bio; }
+    public void setEmail(String email) { this.email = email; }
 }
