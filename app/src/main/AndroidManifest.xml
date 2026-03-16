@@ -22,7 +22,7 @@
         android:theme="@style/Theme.EmptyActivity"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        
+        <activity android:name=".ChatActivity" />
         <!-- ============================================================ -->
         <!-- النشاط الرئيسي (يظهر عند فتح التطبيق)                        -->
         <!-- ============================================================ -->
