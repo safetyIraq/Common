@@ -1,5 +1,6 @@
 package com.example.emptyactivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -51,26 +52,41 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-
-        // استقبال البيانات من SearchActivity
-        receiverId = getIntent().getStringExtra("user_id");
-        receiverName = getIntent().getStringExtra("user_name");
-        receiverImage = getIntent().getStringExtra("user_image");
-
-        // التحقق من استقبال البيانات
-        if (receiverId == null || receiverName == null) {
-            Toast.makeText(this, "خطأ في فتح المحادثة", Toast.LENGTH_SHORT).show();
+        
+        try {
+            setContentView(R.layout.activity_chat);
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ في تحميل واجهة المحادثة", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        initViews();
-        setupFirebase();
-        checkFirebaseConnection();
-        setupChatRoom();
-        loadMessages();
-        setupClickListeners();
+        // استقبال البيانات مع التحقق
+        Intent intent = getIntent();
+        if (intent != null) {
+            receiverId = intent.getStringExtra("user_id");
+            receiverName = intent.getStringExtra("user_name");
+            receiverImage = intent.getStringExtra("user_image");
+        }
+
+        // التحقق من البيانات
+        if (receiverId == null || receiverId.isEmpty() || 
+            receiverName == null || receiverName.isEmpty()) {
+            Toast.makeText(this, "خطأ: بيانات المستخدم غير صحيحة", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        try {
+            initViews();
+            setupFirebase();
+            setupChatRoom();
+            loadMessages();
+            setupClickListeners();
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ في تهيئة المحادثة: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void initViews() {
@@ -83,17 +99,24 @@ public class ChatActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btnSend);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // عرض اسم المستخدم المستقبل
-        userName.setText(receiverName != null ? receiverName : "مستخدم");
+        // عرض اسم المستخدم
+        userName.setText(receiverName);
         
-        // عرض صورة المستخدم إذا كانت موجودة
+        // عرض الصورة إذا وجدت
         if (receiverImage != null && !receiverImage.isEmpty()) {
-            Glide.with(this).load(receiverImage).into(userImage);
+            try {
+                Glide.with(this).load(receiverImage).into(userImage);
+            } catch (Exception e) {
+                // إذا فشل تحميل الصورة، استخدم الصورة الافتراضية
+                userImage.setImageResource(R.drawable.bg_login);
+            }
         }
 
         // إعداد RecyclerView
@@ -101,38 +124,28 @@ public class ChatActivity extends AppCompatActivity {
         chatAdapter = new ChatAdapter(messageList, receiverName, receiverImage);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(chatAdapter);
+        
+        userStatus.setText("جاري الاتصال...");
     }
 
     private void setupFirebase() {
-        mAuth = FirebaseAuth.getInstance();
-        mDb = FirebaseDatabase.getInstance().getReference();
-        currentUserId = mAuth.getCurrentUser().getUid();
-    }
-
-    private void checkFirebaseConnection() {
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class) != null && snapshot.getValue(Boolean.class);
-                if (connected) {
-                    userStatus.setText("متصل");
-                    userStatus.setTextColor(0xFF4CAF50);
-                } else {
-                    userStatus.setText("غير متصل");
-                    userStatus.setTextColor(0xFF999999);
-                }
+        try {
+            mAuth = FirebaseAuth.getInstance();
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(this, "يجب تسجيل الدخول أولاً", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                userStatus.setText("غير متصل");
-            }
-        });
+            currentUserId = mAuth.getCurrentUser().getUid();
+            mDb = FirebaseDatabase.getInstance().getReference();
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ في الاتصال بـ Firebase", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void setupChatRoom() {
-        // إنشاء معرف فريد للمحادثة (أصغر ID أولاً)
+        // إنشاء معرف فريد للمحادثة
         if (currentUserId.compareTo(receiverId) < 0) {
             chatRoomId = currentUserId + "_" + receiverId;
         } else {
@@ -141,37 +154,36 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void loadMessages() {
-        mDb.child("Chats").child(chatRoomId).child("messages")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        messageList.clear();
-                        for (DataSnapshot data : snapshot.getChildren()) {
-                            ChatMessage message = data.getValue(ChatMessage.class);
-                            if (message != null) {
-                                messageList.add(message);
+        try {
+            mDb.child("Chats").child(chatRoomId).child("messages")
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            messageList.clear();
+                            for (DataSnapshot data : snapshot.getChildren()) {
+                                try {
+                                    ChatMessage message = data.getValue(ChatMessage.class);
+                                    if (message != null) {
+                                        messageList.add(message);
+                                    }
+                                } catch (Exception e) {
+                                    // تخطي الرسائل التالفة
+                                }
                             }
+                            chatAdapter.notifyDataSetChanged();
+                            if (messageList.size() > 0) {
+                                recyclerView.scrollToPosition(messageList.size() - 1);
+                            }
+                            userStatus.setText("متصل");
                         }
-                        chatAdapter.notifyDataSetChanged();
-                        recyclerView.scrollToPosition(messageList.size() - 1);
 
-                        // تحديث حالة القراءة
-                        markMessagesAsRead();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(ChatActivity.this, "خطأ في تحميل الرسائل", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    private void markMessagesAsRead() {
-        for (ChatMessage message : messageList) {
-            if (message.getReceiverId().equals(currentUserId) && !message.isRead()) {
-                mDb.child("Chats").child(chatRoomId).child("messages")
-                        .child(message.getMessageId()).child("isRead").setValue(true);
-            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            userStatus.setText("غير متصل");
+                        }
+                    });
+        } catch (Exception e) {
+            userStatus.setText("غير متصل");
         }
     }
 
@@ -202,16 +214,9 @@ public class ChatActivity extends AppCompatActivity {
                 .setValue(message.toMap())
                 .addOnSuccessListener(aVoid -> {
                     etMessage.setText("");
-                    // تحديث آخر رسالة للمعاينة
-                    updateLastMessage(messageText, timestamp);
                 })
                 .addOnFailureListener(e -> 
-                    Toast.makeText(this, "فشل في إرسال الرسالة", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ChatActivity.this, "فشل في إرسال الرسالة", Toast.LENGTH_SHORT).show()
                 );
-    }
-
-    private void updateLastMessage(String message, long timestamp) {
-        mDb.child("Chats").child(chatRoomId).child("lastMessage").setValue(message);
-        mDb.child("Chats").child(chatRoomId).child("lastTimestamp").setValue(timestamp);
     }
 }
