@@ -467,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
         userMap.put("username", username);
         userMap.put("email", email);
         userMap.put("displayName", username.toUpperCase());
-        userMap.put("bio", "");
+        userMap.put("bio", "#لست صداعاً انا فكرة اكبر من رأسك.");
         userMap.put("profileImage", "");
 
         mDb.child("Users").child(uid).setValue(userMap).addOnCompleteListener(task -> {
@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // ================ دالة goToDashboard كاملة ================
+    // دالة goToDashboard كاملة
     // ============================================================
     private void goToDashboard() {
         authView.setVisibility(View.GONE);
@@ -511,12 +511,12 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setSelectedItemId(R.id.nav_chats);
 
         loadUserProfile();
-        ensureUserInFirebase(); // 👈 التأكد من وجود المستخدم في Firebase
-        testFirebaseConnection(); // 👈 اختبار الاتصال (اختياري)
+        ensureUserInFirebase();
+        testFirebaseConnection();
     }
 
     // ============================================================
-    // التأكد من وجود المستخدم في Firebase (الحل النهائي)
+    // التأكد من وجود المستخدم في Firebase (✅ معدل نهائياً)
     // ============================================================
     private void ensureUserInFirebase() {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -529,6 +529,10 @@ public class MainActivity extends AppCompatActivity {
         if (name == null) name = "مستخدم";
         if (email == null) email = "user@example.com";
         
+        // ✅ نسخ المتغيرات إلى متغيرات final
+        final String finalName = name;
+        final String finalEmail = email;
+        
         DatabaseReference userRef = mDb.child("Users").child(uid);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -537,11 +541,11 @@ public class MainActivity extends AppCompatActivity {
                     // المستخدم غير موجود → أضفه
                     HashMap<String, Object> userMap = new HashMap<>();
                     userMap.put("uid", uid);
-                    userMap.put("displayName", name);
-                    userMap.put("username", name.toLowerCase().replace(" ", ""));
-                    userMap.put("email", email);
+                    userMap.put("displayName", finalName);
+                    userMap.put("username", finalName.toLowerCase().replace(" ", ""));
+                    userMap.put("email", finalEmail);
                     userMap.put("profileImage", "");
-                    userMap.put("bio", "");
+                    userMap.put("bio", "#لست صداعاً انا فكرة اكبر من رأسك.");
                     
                     userRef.setValue(userMap)
                             .addOnSuccessListener(aVoid -> 
@@ -846,4 +850,4 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-}
+                                     }
