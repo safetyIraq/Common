@@ -53,7 +53,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        // استقبال البيانات من الـ Intent
+        // استقبال البيانات من SearchActivity
         receiverId = getIntent().getStringExtra("user_id");
         receiverName = getIntent().getStringExtra("user_name");
         receiverImage = getIntent().getStringExtra("user_image");
