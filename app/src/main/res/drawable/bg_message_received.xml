@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android-color="#2D2D2D" />
-    <corners android:topLeft="18dp" android:topRight="18dp" android:bottomLeft="4dp" android:bottomRight="18dp" />
+    <!-- لون الخلفية رمادي غامق -->
+    <solid android:color="#2D2D2D" />
+    <!-- زوايا دائرية متساوية (بدون أخطاء) -->
+    <corners android:radius="18dp" />
 </shape>
