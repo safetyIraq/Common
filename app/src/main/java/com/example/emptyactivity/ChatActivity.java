@@ -55,18 +55,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        // استقبال البيانات
         Intent intent = getIntent();
         if (intent != null) {
             receiverId = intent.getStringExtra("user_id");
             receiverName = intent.getStringExtra("user_name");
             receiverImage = intent.getStringExtra("user_image");
-            
-            Log.d("CHAT_DEBUG", "ChatActivity Received:");
-            Log.d("CHAT_DEBUG", "ID: " + receiverId);
-            Log.d("CHAT_DEBUG", "Name: " + receiverName);
-            Log.d("CHAT_DEBUG", "Image: " + receiverImage);
         }
 
+        // التحقق من البيانات
         if (receiverId == null || receiverId.isEmpty()) {
             Toast.makeText(this, "خطأ: معرف المستخدم غير صحيح", Toast.LENGTH_LONG).show();
             finish();
@@ -105,22 +102,23 @@ public class ChatActivity extends AppCompatActivity {
 
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        // عرض اسم المستخدم
         userName.setText(receiverName);
         
+        // عرض الصورة
         if (receiverImage != null && !receiverImage.isEmpty()) {
-            try {
-                Glide.with(this)
-                        .load(receiverImage)
-                        .placeholder(R.drawable.bg_login)
-                        .error(R.drawable.bg_login)
-                        .into(userImage);
-            } catch (Exception e) {
-                userImage.setImageResource(R.drawable.bg_login);
-            }
+            Glide.with(this)
+                    .load(receiverImage)
+                    .placeholder(R.drawable.bg_login)
+                    .error(R.drawable.bg_login)
+                    .into(userImage);
+        } else {
+            userImage.setImageResource(R.drawable.bg_login);
         }
 
+        // إعداد RecyclerView
         messageList = new ArrayList<>();
-        chatAdapter = new ChatAdapter(messageList, receiverName, receiverImage);
+        chatAdapter = new ChatAdapter(messageList, receiverName);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(chatAdapter);
         
@@ -144,7 +142,6 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             chatRoomId = receiverId + "_" + currentUserId;
         }
-        Log.d("CHAT_DEBUG", "Chat Room ID: " + chatRoomId);
     }
 
     private void loadMessages() {
@@ -169,7 +166,6 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         userStatus.setText("غير متصل");
-                        Toast.makeText(ChatActivity.this, "خطأ في تحميل الرسائل", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
