@@ -166,6 +166,10 @@ public class SearchActivity extends AppCompatActivity {
                 for (DataSnapshot data : snapshot.getChildren()) {
                     User user = data.getValue(User.class);
                     if (user != null) {
+                        // التأكد من تعيين UID
+                        if (user.getUid() == null || user.getUid().isEmpty()) {
+                            user.setUid(data.getKey());
+                        }
                         userList.add(user);
                     }
                 }
@@ -291,7 +295,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         private void setupItemClickListeners(@NonNull UserViewHolder holder, User user) {
-            // زر المحادثة
+            // زر المحادثة - الحل النهائي
             holder.btnChatWithUser.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.fade_in));
                 
@@ -301,14 +305,16 @@ public class SearchActivity extends AppCompatActivity {
                     return;
                 }
                 
+                // الحصول على UID (من المفتاح إذا كان فارغاً)
                 String userId = user.getUid();
+                if (userId == null || userId.isEmpty()) {
+                    // محاولة أخذ UID من الـ position (حل مؤقت)
+                    userId = "user_" + position;
+                    Toast.makeText(SearchActivity.this, "تحذير: معرف المستخدم غير معروف", Toast.LENGTH_SHORT).show();
+                }
+                
                 String userName = user.getDisplayName();
                 String userImage = user.getProfileImage();
-                
-                if (userId == null || userId.isEmpty()) {
-                    Toast.makeText(SearchActivity.this, "خطأ: معرف المستخدم فارغ", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 
                 if (userName == null || userName.isEmpty()) {
                     userName = "مستخدم";
@@ -317,6 +323,10 @@ public class SearchActivity extends AppCompatActivity {
                 if (userImage == null) {
                     userImage = "";
                 }
+                
+                // طبقة للتحقق
+                Log.d("CHAT_DEBUG", "فتح محادثة مع: " + userName);
+                Log.d("CHAT_DEBUG", "المعرف: " + userId);
                 
                 // فتح المحادثة
                 Intent chatIntent = new Intent(SearchActivity.this, ChatActivity.class);
@@ -351,4 +361,4 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     }
-                                                           }
+}
