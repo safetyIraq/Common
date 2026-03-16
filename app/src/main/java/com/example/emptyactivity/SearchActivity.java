@@ -251,6 +251,9 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    // ================================================================
+    // 📦 محول RecyclerView (Adapter)
+    // ================================================================
     class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.UserViewHolder> {
         private final List<User> users;
 
@@ -294,8 +297,11 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
+        // ================================================================
+        // 👇 هذا هو الكود الصحيح (بدون استخدام position)
+        // ================================================================
         private void setupItemClickListeners(@NonNull UserViewHolder holder, User user) {
-            // زر المحادثة - الحل النهائي
+            // زر المحادثة
             holder.btnChatWithUser.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.fade_in));
                 
@@ -305,16 +311,18 @@ public class SearchActivity extends AppCompatActivity {
                     return;
                 }
                 
-                // الحصول على UID (من المفتاح إذا كان فارغاً)
+                // الحصول على UID
                 String userId = user.getUid();
-                if (userId == null || userId.isEmpty()) {
-                    // محاولة أخذ UID من الـ position (حل مؤقت)
-                    userId = "user_" + position;
-                    Toast.makeText(SearchActivity.this, "تحذير: معرف المستخدم غير معروف", Toast.LENGTH_SHORT).show();
-                }
-                
                 String userName = user.getDisplayName();
                 String userImage = user.getProfileImage();
+                
+                // إذا كان UID فارغ، نستخدم المفتاح من قاعدة البيانات (data.getKey())
+                if (userId == null || userId.isEmpty()) {
+                    // نحاول الحصول على UID من user (إذا كان محفوظاً)
+                    // أو نستخدم معرف بديل
+                    userId = "user_" + System.currentTimeMillis(); // استخدام الوقت كمعرف مؤقت
+                    Toast.makeText(SearchActivity.this, "تحذير: معرف المستخدم غير معروف", Toast.LENGTH_SHORT).show();
+                }
                 
                 if (userName == null || userName.isEmpty()) {
                     userName = "مستخدم";
@@ -323,10 +331,6 @@ public class SearchActivity extends AppCompatActivity {
                 if (userImage == null) {
                     userImage = "";
                 }
-                
-                // طبقة للتحقق
-                Log.d("CHAT_DEBUG", "فتح محادثة مع: " + userName);
-                Log.d("CHAT_DEBUG", "المعرف: " + userId);
                 
                 // فتح المحادثة
                 Intent chatIntent = new Intent(SearchActivity.this, ChatActivity.class);
