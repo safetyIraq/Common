@@ -1,5 +1,6 @@
 package com.example.emptyactivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,11 +13,11 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,54 +30,37 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * =====================================================================
- * 🔍 نشاط البحث المتقدم - SearchActivity
- * =====================================================================
- * 
- * 💫 هذا النشاط مسؤول عن البحث عن المستخدمين في قاعدة البيانات
- * ✨ يتميز بالبحث الفوري مع تحسين الأداء وتجربة مستخدم سلسة
- * 
- * @version 2.0.0
- * @since 2026
- * =====================================================================
- */
 public class SearchActivity extends AppCompatActivity {
 
     // ================================================================
-    // 🔧 الثوابت - Constants
+    // 🔧 الثوابت
     // ================================================================
-    private static final String TAG = "SearchActivity";
-    private static final long SEARCH_DELAY_MS = 500; // تأخير البحث لتحسين الأداء
-    private static final int MIN_SEARCH_CHARS = 1; // أقل عدد أحرف للبحث
+    private static final long SEARCH_DELAY_MS = 500;
+    private static final int MIN_SEARCH_CHARS = 1;
     private static final String DATABASE_PATH_USERS = "Users";
-    private static final String DATABASE_FIELD_USERNAME = "username";
-    private static final String DATABASE_FIELD_DISPLAY_NAME = "displayName";
 
     // ================================================================
-    // 📊 متغيرات الواجهة - UI Components
+    // 📊 متغيرات الواجهة
     // ================================================================
     private EditText etSearch;
     private RecyclerView rvSearchResults;
     private ImageView btnBack;
     private TextView tvNoResults;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private View loadingIndicator;
+    private ProgressBar loadingIndicator;
 
     // ================================================================
-    // 🔄 متغيرات البيانات - Data Components
+    // 🔄 متغيرات البيانات
     // ================================================================
     private SearchAdapter adapter;
     private List<User> userList;
@@ -84,7 +68,7 @@ public class SearchActivity extends AppCompatActivity {
     private DatabaseReference mDb;
 
     // ================================================================
-    // ⚡ متغيرات التحكم - Control Variables
+    // ⚡ متغيرات التحكم
     // ================================================================
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
@@ -92,7 +76,7 @@ public class SearchActivity extends AppCompatActivity {
     private ValueEventListener searchListener;
 
     // ================================================================
-    // 🏗️ دورة حياة النشاط - Activity Lifecycle
+    // 🏗️ دورة حياة النشاط
     // ================================================================
 
     @Override
@@ -105,13 +89,12 @@ public class SearchActivity extends AppCompatActivity {
         setupRecyclerView();
         setupSearchListener();
         setupClickListeners();
-        loadAllUsers(); // تحميل جميع المستخدمين عند البداية
+        loadAllUsers();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // تنظيف الموارد لمنع تسرب الذاكرة
         searchHandler.removeCallbacksAndMessages(null);
         if (searchListener != null && mDb != null) {
             mDb.removeEventListener(searchListener);
@@ -119,12 +102,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     // ================================================================
-    // 🎨 تهيئة الواجهات - View Initialization
+    // 🎨 تهيئة الواجهات
     // ================================================================
 
-    /**
-     * تهيئة جميع عناصر الواجهة
-     */
     private void initViews() {
         etSearch = findViewById(R.id.etSearch);
         rvSearchResults = findViewById(R.id.rvSearchResults);
@@ -133,13 +113,9 @@ public class SearchActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         loadingIndicator = findViewById(R.id.loadingIndicator);
 
-        // إعدادات إضافية للواجهة
         setupKeyboardAction();
     }
 
-    /**
-     * إعداد زر الإدخال في لوحة المفاتيح
-     */
     private void setupKeyboardAction() {
         etSearch.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
@@ -152,92 +128,71 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     // ================================================================
-    // 🔥 إعداد Firebase - Firebase Setup
+    // 🔥 إعداد Firebase
     // ================================================================
 
-    /**
-     * تهيئة اتصال Firebase
-     */
     private void setupFirebase() {
         mDb = FirebaseDatabase.getInstance().getReference(DATABASE_PATH_USERS);
     }
 
     // ================================================================
-    // 📋 إعداد RecyclerView - RecyclerView Setup
+    // 📋 إعداد RecyclerView
     // ================================================================
 
-    /**
-     * تهيئة RecyclerView والمحول
-     */
     private void setupRecyclerView() {
         userList = new ArrayList<>();
         filteredList = new ArrayList<>();
-        
+
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
         rvSearchResults.setHasFixedSize(true);
         rvSearchResults.setItemViewCacheSize(20);
-        
+
         adapter = new SearchAdapter(filteredList);
         rvSearchResults.setAdapter(adapter);
     }
 
     // ================================================================
-    // 👆 إعداد مستمعي الأحداث - Click Listeners Setup
+    // 👆 إعداد مستمعي الأحداث
     // ================================================================
 
-    /**
-     * إعداد جميع مستمعي الأحداث
-     */
     private void setupClickListeners() {
-        // زر الرجوع
         btnBack.setOnClickListener(v -> {
             v.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
             finish();
         });
 
-        // تحديث القائمة بالسحب للأسفل
         swipeRefreshLayout.setOnRefreshListener(this::refreshUserList);
         swipeRefreshLayout.setColorSchemeResources(
-            android.R.color.holo_blue_dark,
-            android.R.color.holo_green_dark,
-            android.R.color.holo_orange_dark
+                android.R.color.holo_blue_dark,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark
         );
     }
 
-    /**
-     * تحديث قائمة المستخدمين
-     */
     private void refreshUserList() {
         loadAllUsers();
     }
 
     // ================================================================
-    // 🔍 إعداد البحث - Search Setup
+    // 🔍 إعداد البحث
     // ================================================================
 
-    /**
-     * إعداد مستمع البحث الفوري مع تأخير لتحسين الأداء
-     */
     private void setupSearchListener() {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // لا حاجة لتنفيذ شيء
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // إلغاء الطلب السابق وتأخير البحث الجديد
                 searchHandler.removeCallbacks(searchRunnable);
-                
+
                 String searchText = s.toString().trim();
-                
+
                 if (searchText.length() >= MIN_SEARCH_CHARS) {
                     showLoading(true);
                     searchRunnable = () -> performSearch(searchText.toLowerCase(Locale.getDefault()));
                     searchHandler.postDelayed(searchRunnable, SEARCH_DELAY_MS);
                 } else {
-                    // إظهار جميع المستخدمين إذا كان النص فارغاً
                     filteredList.clear();
                     filteredList.addAll(userList);
                     adapter.notifyDataSetChanged();
@@ -247,22 +202,17 @@ public class SearchActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // لا حاجة لتنفيذ شيء
-            }
+            public void afterTextChanged(Editable s) {}
         });
     }
 
     // ================================================================
-    // 📥 تحميل البيانات - Data Loading
+    // 📥 تحميل البيانات
     // ================================================================
 
-    /**
-     * تحميل جميع المستخدمين من قاعدة البيانات
-     */
     private void loadAllUsers() {
         showLoading(true);
-        
+
         if (searchListener != null) {
             mDb.removeEventListener(searchListener);
         }
@@ -271,7 +221,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
-                
+
                 for (DataSnapshot data : snapshot.getChildren()) {
                     User user = data.getValue(User.class);
                     if (user != null) {
@@ -279,10 +229,8 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
 
-                // ترتيب المستخدمين أبجدياً
                 sortUsersByName();
 
-                // تحديث القائمة المعروضة
                 filteredList.clear();
                 filteredList.addAll(userList);
                 adapter.notifyDataSetChanged();
@@ -303,9 +251,6 @@ public class SearchActivity extends AppCompatActivity {
         mDb.addValueEventListener(searchListener);
     }
 
-    /**
-     * ترتيب المستخدمين حسب الاسم
-     */
     private void sortUsersByName() {
         Collections.sort(userList, (u1, u2) -> {
             String name1 = u1.getDisplayName() != null ? u1.getDisplayName() : "";
@@ -315,29 +260,23 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     // ================================================================
-    // 🔎 تنفيذ البحث - Perform Search
+    // 🔎 تنفيذ البحث
     // ================================================================
 
-    /**
-     * تنفيذ البحث في قائمة المستخدمين
-     * @param searchText نص البحث
-     */
     private void performSearch(String searchText) {
         if (isSearching.get()) return;
-        
+
         isSearching.set(true);
-        
-        // البحث في الذاكرة المحلية (أسرع من البحث في Firebase)
+
         new Thread(() -> {
             List<User> results = new ArrayList<>();
-            
+
             for (User user : userList) {
                 if (isMatch(user, searchText)) {
                     results.add(user);
                 }
             }
 
-            // تحديث الواجهة في الـ UI Thread
             runOnUiThread(() -> {
                 filteredList.clear();
                 filteredList.addAll(results);
@@ -349,28 +288,19 @@ public class SearchActivity extends AppCompatActivity {
         }).start();
     }
 
-    /**
-     * التحقق مما إذا كان المستخدم يطابق نص البحث
-     * @param user المستخدم
-     * @param searchText نص البحث
-     * @return true إذا كان مطابقاً
-     */
     private boolean isMatch(User user, String searchText) {
         if (user == null || searchText == null || searchText.isEmpty()) return false;
 
-        // البحث في اسم المستخدم
         String username = user.getUsername();
         if (username != null && username.toLowerCase(Locale.getDefault()).contains(searchText)) {
             return true;
         }
 
-        // البحث في الاسم المعروض
         String displayName = user.getDisplayName();
         if (displayName != null && displayName.toLowerCase(Locale.getDefault()).contains(searchText)) {
             return true;
         }
 
-        // البحث في البريد الإلكتروني
         String email = user.getEmail();
         if (email != null && email.toLowerCase(Locale.getDefault()).contains(searchText)) {
             return true;
@@ -380,12 +310,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     // ================================================================
-    // 🎯 تحديث الواجهة - UI Updates
+    // 🎯 تحديث الواجهة
     // ================================================================
 
-    /**
-     * تحديث ظهور رسالة "لا توجد نتائج"
-     */
     private void updateNoResultsVisibility() {
         if (tvNoResults != null) {
             if (filteredList.isEmpty()) {
@@ -398,10 +325,6 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * إظهار/إخفاء مؤشر التحميل
-     * @param show true للإظهار، false للإخفاء
-     */
     private void showLoading(boolean show) {
         if (loadingIndicator != null) {
             loadingIndicator.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -409,13 +332,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     // ================================================================
-    // ⚠️ معالجة الأخطاء - Error Handling
+    // ⚠️ معالجة الأخطاء
     // ================================================================
 
-    /**
-     * معالجة أخطاء قاعدة البيانات
-     * @param error كائن الخطأ
-     */
     private void handleDatabaseError(@NonNull DatabaseError error) {
         String errorMessage;
         switch (error.getCode()) {
@@ -429,17 +348,14 @@ public class SearchActivity extends AppCompatActivity {
                 errorMessage = "حدث خطأ: " + error.getMessage();
                 break;
         }
-        
+
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     // ================================================================
-    // 📦 محول RecyclerView - RecyclerView Adapter
+    // 📦 محول RecyclerView
     // ================================================================
 
-    /**
-     * محول عرض المستخدمين في القائمة
-     */
     class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.UserViewHolder> {
 
         private final List<User> users;
@@ -461,20 +377,12 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
             User user = users.get(position);
-            
-            // تطبيق تأثير ظهور تدريجي
+
             animateItemView(holder.itemView, position);
-            
-            // تعيين البيانات
             bindUserData(holder, user);
-            
-            // إعداد مستمعي الأحداث
             setupItemClickListeners(holder, user, position);
         }
 
-        /**
-         * تطبيق تأثير ظهور تدريجي للعناصر
-         */
         private void animateItemView(View view, int position) {
             if (position > lastAnimatedPosition) {
                 view.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.slide_in_left));
@@ -482,19 +390,13 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
-        /**
-         * تعيين بيانات المستخدم في واجهة العنصر
-         */
         private void bindUserData(@NonNull UserViewHolder holder, User user) {
-            // تعيين الاسم
-            String displayName = user.getDisplayNameWithDot();
-            holder.itemName.setText(displayName.isEmpty() ? "مستخدم" : displayName);
+            String displayName = user.getDisplayName() != null ? user.getDisplayName() + " •" : "مستخدم •";
+            holder.itemName.setText(displayName);
 
-            // تعيين النبذة
             String bio = user.getBio();
             holder.itemBio.setText(bio != null && !bio.isEmpty() ? bio : "لا توجد نبذة");
 
-            // تحميل الصورة
             String imageUrl = user.getProfileImage();
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Glide.with(SearchActivity.this)
@@ -508,17 +410,25 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
-        /**
-         * إعداد مستمعي الأحداث للعنصر
-         */
+        // ================================================================
+        // 👇 هذا هو الجزء المهم - زر المحادثة
+        // ================================================================
         private void setupItemClickListeners(@NonNull UserViewHolder holder, User user, int position) {
-            // فتح المحادثة
+            // عند الضغط على زر المحادثة (فتح ChatActivity)
             holder.btnChatWithUser.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.fade_in));
-                openChatWithUser(user);
+                
+                // فتح محادثة مع المستخدم
+                Intent chatIntent = new Intent(SearchActivity.this, ChatActivity.class);
+                chatIntent.putExtra("user_id", user.getUid());
+                chatIntent.putExtra("user_name", user.getDisplayName());
+                chatIntent.putExtra("user_image", user.getProfileImage());
+                startActivity(chatIntent);
+                
+                Toast.makeText(SearchActivity.this, "جاري فتح المحادثة مع " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
             });
 
-            // النقر على العنصر ككل
+            // عند الضغط على العنصر ككل (عرض الملف الشخصي)
             holder.itemView.setOnClickListener(v -> {
                 showUserProfile(user);
             });
@@ -531,18 +441,13 @@ public class SearchActivity extends AppCompatActivity {
 
         @Override
         public long getItemId(int position) {
-            // استخدام hashcode لضمان استقرار المعرفات
             return users.get(position).hashCode();
         }
 
-        /**
-         * ViewHolder لعناصر القائمة
-         */
         class UserViewHolder extends RecyclerView.ViewHolder {
             TextView itemName, itemBio;
             CircleImageView itemProfileImage;
             View btnChatWithUser;
-            View onlineIndicator;
 
             public UserViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -550,50 +455,15 @@ public class SearchActivity extends AppCompatActivity {
                 itemBio = itemView.findViewById(R.id.itemBio);
                 itemProfileImage = itemView.findViewById(R.id.itemProfileImage);
                 btnChatWithUser = itemView.findViewById(R.id.btnChatWithUser);
-                onlineIndicator = itemView.findViewById(R.id.itemOnlineStatus);
             }
         }
     }
 
     // ================================================================
-    // 🚀 وظائف إضافية - Additional Functions
+    // 🚀 وظائف إضافية
     // ================================================================
 
-    /**
-     * فتح محادثة مع المستخدم
-     */
-    private void openChatWithUser(User user) {
-        String message = String.format("سيتم فتح محادثة مع %s في الإصدار القادم!", 
-                user.getDisplayName() != null ? user.getDisplayName() : "المستخدم");
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        
-        // TODO: إضافة Intent لفتح ChatActivity
-        // Intent intent = new Intent(this, ChatActivity.class);
-        // intent.putExtra("user_id", user.getUid());
-        // startActivity(intent);
-    }
-
-    /**
-     * عرض الملف الشخصي للمستخدم
-     */
     private void showUserProfile(User user) {
         Toast.makeText(this, "عرض ملف " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-        
-        // TODO: إضافة Intent لفتح ProfileActivity
-        // Intent intent = new Intent(this, ProfileActivity.class);
-        // intent.putExtra("user_id", user.getUid());
-        // startActivity(intent);
     }
-
-    // ================================================================
-    // 📝 مثال للاستخدام المتقدم
-    // ================================================================
-    
-    /**
-     * بحث متقدم مع فلترة حسب عدة معايير
-     */
-    private void advancedSearch(String text) {
-        // يمكن إضافة خيارات بحث متقدمة هنا
-        // مثل: البحث حسب الاسم، المدينة، الاهتمامات، إلخ
-    }
-                }
+                    }
