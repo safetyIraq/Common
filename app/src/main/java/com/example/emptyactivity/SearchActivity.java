@@ -43,10 +43,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private static final long SEARCH_DELAY_MS = 500;
-    private static final int MIN_SEARCH_CHARS = 1;
-    private static final String DATABASE_PATH_USERS = "Users";
-
     private EditText etSearch;
     private RecyclerView rvSearchResults;
     private ImageView btnBack;
@@ -99,7 +95,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setupFirebase() {
-        mDb = FirebaseDatabase.getInstance().getReference(DATABASE_PATH_USERS);
+        mDb = FirebaseDatabase.getInstance().getReference("Users");
     }
 
     private void setupRecyclerView() {
@@ -139,10 +135,10 @@ public class SearchActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchHandler.removeCallbacks(searchRunnable);
                 String searchText = s.toString().trim();
-                if (searchText.length() >= MIN_SEARCH_CHARS) {
+                if (searchText.length() >= 1) {
                     showLoading(true);
                     searchRunnable = () -> performSearch(searchText.toLowerCase(Locale.getDefault()));
-                    searchHandler.postDelayed(searchRunnable, SEARCH_DELAY_MS);
+                    searchHandler.postDelayed(searchRunnable, 500);
                 } else {
                     filteredList.clear();
                     filteredList.addAll(userList);
@@ -184,7 +180,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                handleDatabaseError(error);
+                Toast.makeText(SearchActivity.this, "خطأ: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 showLoading(false);
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -251,25 +247,8 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private void handleDatabaseError(@NonNull DatabaseError error) {
-        String errorMessage;
-        switch (error.getCode()) {
-            case DatabaseError.PERMISSION_DENIED:
-                errorMessage = "ليس لديك صلاحية للوصول إلى هذه البيانات";
-                break;
-            case DatabaseError.NETWORK_ERROR:
-                errorMessage = "خطأ في الشبكة، تحقق من اتصالك بالإنترنت";
-                break;
-            default:
-                errorMessage = "حدث خطأ: " + error.getMessage();
-                break;
-        }
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-    }
-
     class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.UserViewHolder> {
         private final List<User> users;
-        private int lastAnimatedPosition = -1;
 
         public SearchAdapter(List<User> users) {
             this.users = users;
@@ -287,23 +266,17 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
             User user = users.get(position);
-            animateItemView(holder.itemView, position);
             bindUserData(holder, user);
-            setupItemClickListeners(holder, user, position);
-        }
-
-        private void animateItemView(View view, int position) {
-            if (position > lastAnimatedPosition) {
-                view.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.slide_in_left));
-                lastAnimatedPosition = position;
-            }
+            setupItemClickListeners(holder, user);
         }
 
         private void bindUserData(@NonNull UserViewHolder holder, User user) {
             String displayName = user.getDisplayName() != null ? user.getDisplayName() + " •" : "مستخدم •";
             holder.itemName.setText(displayName);
+            
             String bio = user.getBio();
             holder.itemBio.setText(bio != null && !bio.isEmpty() ? bio : "لا توجد نبذة");
+            
             String imageUrl = user.getProfileImage();
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Glide.with(SearchActivity.this)
@@ -317,24 +290,43 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
-        private void setupItemClickListeners(@NonNull UserViewHolder holder, User user, int position) {
+        private void setupItemClickListeners(@NonNull UserViewHolder holder, User user) {
+            // زر المحادثة
             holder.btnChatWithUser.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(SearchActivity.this, android.R.anim.fade_in));
                 
-                if (user == null || user.getUid() == null || user.getUid().isEmpty()) {
-                    Toast.makeText(SearchActivity.this, "خطأ: بيانات المستخدم غير صحيحة", Toast.LENGTH_SHORT).show();
+                // التحقق من البيانات
+                if (user == null) {
+                    Toast.makeText(SearchActivity.this, "خطأ: المستخدم غير موجود", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                Log.d("CHAT_DEBUG", "Opening chat with: " + user.getDisplayName() + " (ID: " + user.getUid() + ")");
                 
+                String userId = user.getUid();
+                String userName = user.getDisplayName();
+                String userImage = user.getProfileImage();
+                
+                if (userId == null || userId.isEmpty()) {
+                    Toast.makeText(SearchActivity.this, "خطأ: معرف المستخدم فارغ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                if (userName == null || userName.isEmpty()) {
+                    userName = "مستخدم";
+                }
+                
+                if (userImage == null) {
+                    userImage = "";
+                }
+                
+                // فتح المحادثة
                 Intent chatIntent = new Intent(SearchActivity.this, ChatActivity.class);
-                chatIntent.putExtra("user_id", user.getUid());
-                chatIntent.putExtra("user_name", user.getDisplayName());
-                chatIntent.putExtra("user_image", user.getProfileImage() != null ? user.getProfileImage() : "");
+                chatIntent.putExtra("user_id", userId);
+                chatIntent.putExtra("user_name", userName);
+                chatIntent.putExtra("user_image", userImage);
                 startActivity(chatIntent);
             });
 
+            // الضغط على العنصر
             holder.itemView.setOnClickListener(v -> {
                 Toast.makeText(SearchActivity.this, user.getDisplayName(), Toast.LENGTH_SHORT).show();
             });
@@ -342,12 +334,7 @@ public class SearchActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return users != null ? users.size() : 0;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return users.get(position).hashCode();
+            return users.size();
         }
 
         class UserViewHolder extends RecyclerView.ViewHolder {
@@ -364,4 +351,4 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     }
-    }
+}
